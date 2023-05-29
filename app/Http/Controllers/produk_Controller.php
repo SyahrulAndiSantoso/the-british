@@ -91,7 +91,7 @@ class produk_Controller extends Controller
         $gambar = $request->file('thumbnail');
         $cekDirektory = Storage::disk('public')->exists('gambar-produk');
         if (!$cekDirektory) {
-            Storage::makeDirectory('gambar-produk');
+            Storage::makeDirectory('public/gambar-produk');
         }
         $namaGambar = 'gambar-produk/' . time() . $gambar->getClientOriginalName();
         Image::make($request->file('thumbnail'))
@@ -124,7 +124,7 @@ class produk_Controller extends Controller
         $gambar = $request->file('thumbnail');
         $cekDirektory = Storage::disk('public')->exists('gambar-produk');
         if (!$cekDirektory) {
-            Storage::makeDirectory('gambar-produk');
+            Storage::makeDirectory('public/gambar-produk');
         }
 
         $namaGambar = 'gambar-produk/' . time() . $gambar->getClientOriginalName();
