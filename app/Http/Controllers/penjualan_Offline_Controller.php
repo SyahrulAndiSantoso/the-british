@@ -81,10 +81,7 @@ class penjualan_Offline_Controller extends Controller
                         class="bi bi-x"></i>Membatalkan</a> <a href="' .
                             route('viewDetailPenjualanOffline', $penjualanOffline->id_penjualan_offline) .
                             '" class="btn btn-primary"><i
-                class="bi bi-eye-fill mr-2"></i>Lihat Detail</a><a href="' .
-                            route('cetakKwitansi', $penjualanOffline->id_penjualan_offline) .
-                            '" class="btn btn-dark"><i
-    class="bi bi-receipt mr-2"></i>Kwitansi</a>';
+                class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
                     }
                 }
             })

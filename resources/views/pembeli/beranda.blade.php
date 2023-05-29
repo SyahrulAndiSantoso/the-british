@@ -106,9 +106,9 @@
                             @endif
                         @endforeach
                     @else
-                        <div class="col-12 text-secondary">
-                            <center class="justify-content-center">
-                                <h5>Tidak Ada Produk</h5>
+                        <div class="col-12 text-center">
+                            <center class="text-secondary justify-content-center">
+                                <h5 class="text-center">Tidak Ada Produk</h5>
                             </center>
                         </div>
                     @endif
