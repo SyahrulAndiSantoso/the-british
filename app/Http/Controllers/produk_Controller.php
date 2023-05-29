@@ -8,7 +8,6 @@ use App\Models\Kategori_Produk;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\KotaExport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
