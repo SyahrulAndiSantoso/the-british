@@ -94,7 +94,7 @@ class LoginController extends Controller
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'role' => 'pembeli'])) {
             $request->session()->regenerate();
             return redirect()
-                ->intended('/beranda');
+                ->intended('/');
         } else {
             return redirect()
                 ->back()
