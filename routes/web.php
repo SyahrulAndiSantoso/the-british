@@ -216,7 +216,7 @@ Route::middleware(['kasir'])->group(function () {
 });
 
 // Pembeli
-Route::get('/beranda', [home_Controller::class, 'index'])->name('beranda');
+Route::get('/', [home_Controller::class, 'index'])->name('beranda');
 
 Route::get('/login', [LoginController::class, 'view_Login_Pembeli'])->name('viewLoginPembeli');
 
