@@ -318,7 +318,7 @@ class produk_Controller extends Controller
         ->where([
             'produks.stok' => 'ada',
         ])
-        ->latest('produks.id_produk')
+        ->latest()
         ->get();
       
         return view('pembeli.produk', compact('produk', 'judul', 'kategori'));

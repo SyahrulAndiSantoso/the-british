@@ -250,7 +250,7 @@ Route::middleware(['pembeli'])->group(function () {
 
     Route::get('/produk/detail-produk/{produk}', [produk_Controller::class, 'view_Detail_Produk_Pembeli'])->name('detail-produk');
 
-    Route::get('/all-produk', [produk_Controller::class, 'view_Semua_Produk_Pembeli'])->name('viewSemuaProdukPembeli');
+    Route::get('/semua-produk', [produk_Controller::class, 'view_Semua_Produk_Pembeli'])->name('viewSemuaProdukPembeli');
     
     Route::get('/semua-produk/{kategori_produk:nama_kategori_produk}', [produk_Controller::class, 'view_Semua_Produk_Kategori'])->name('viewSemuaProduk');
     
