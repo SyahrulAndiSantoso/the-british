@@ -89,6 +89,10 @@ class produk_Controller extends Controller
         Storage::delete($request->thumbnailLama);
 
         $gambar = $request->file('thumbnail');
+        $cekDirektory = Storage::disk('public')->exists('gambar-produk');
+        if (!$cekDirektory) {
+            Storage::makeDirectory('gambar-produk');
+        }
         $namaGambar = 'gambar-produk/' . time() . $gambar->getClientOriginalName();
         Image::make($request->file('thumbnail'))
             ->resize(500, null, function ($constraint) {
@@ -118,6 +122,11 @@ class produk_Controller extends Controller
             'thumbnail' => 'required|image',
         ]);
         $gambar = $request->file('thumbnail');
+        $cekDirektory = Storage::disk('public')->exists('gambar-produk');
+        if (!$cekDirektory) {
+            Storage::makeDirectory('gambar-produk');
+        }
+
         $namaGambar = 'gambar-produk/' . time() . $gambar->getClientOriginalName();
         Image::make($request->file('thumbnail'))
             ->resize(500, null, function ($constraint) {
@@ -347,7 +356,7 @@ class produk_Controller extends Controller
             ])
             ->latest('produks.id_produk')
             ->get();
-  
+
         return view('pembeli.produk', compact('produk', 'judul', 'kategori'));
     }
 }
