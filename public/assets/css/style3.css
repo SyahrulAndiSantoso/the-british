@@ -1,0 +1,490 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,700&display=swap");
+
+:root {
+--main-color: #da251c;
+--secondary-color: #26171b;
+--body-color: #fefefe;
+--main-font: "Poppins", sans-serif;
+}
+
+body {
+background-color: var(--body-color);
+font-family: var(--main-font);
+}
+
+.teks-merah {
+color: #e04942;
+}
+.teks-merah:hover {
+color: #e04942;
+}
+.btn-merah {
+background-color: var(--main-color);
+}
+
+.btn-oval {
+border-radius: 20px;
+}
+/* Beranda */
+/* Nav */
+nav {
+background-color: var(--body-color);
+}
+
+input.search {
+background-color: #f2f2f2;
+border-radius: 15px;
+
+}
+/* Button Alamat Pengiriman */
+.btn-alamat-pengiriman{
+font-size: 13px;
+background-color: #EAEFF2;
+}
+.btn-alamat-pengiriman:active,.btn-alamat-pengiriman:focus {
+box-shadow: none;
+}
+/* Button All Menu */
+.btn-all{
+font-size: 13px;
+background-color: var(--main-color);
+}
+.btn-all:active,.btn-all:focus {
+box-shadow: none;
+}
+/* Button Banner */
+.btn-banner {
+font-size: 13px;
+background-color: var(--secondary-color);
+}
+.btn-banner:active,.btn-banner:focus {
+box-shadow: none;
+}
+/* Deskripsi Banner */
+.banner {
+position: relative;
+}
+.col-deskripsi-banner {
+position: absolute;
+bottom: 10%;
+left: 20px;
+color: var(--body-color);
+}
+
+.deskripsi-banner {
+font-weight: bold;
+font-size: 20px;
+padding-bottom: 6px;
+}
+
+.markup {
+color: var(--body-color);
+}
+/* image banner */
+.img-banner {
+width: 100%;
+object-fit: cover;
+height: 70vw;
+border-radius: 10px;
+}
+/* teks detail */
+.teks-detail {
+font-size: 75%;
+}
+
+/* Card kategori */
+.card {
+border-radius: 10px;
+}
+.kategori {
+height: 40vw;
+border-bottom-left-radius: 10px;
+border-bottom-right-radius: 10px;
+}
+.kategori h5 {
+font-weight: bold;
+}
+h5.card-text {
+position: absolute;
+}
+
+.card-img-overlay h5 {
+background-color: rgba(0, 0, 0, 0.7);
+}
+/* Card Produk */
+.card-produk {
+border: 3px solid #FEFEFE;
+border-radius: 20px;
+background-color: #FFFFFF;
+box-shadow: 0px 4px 10px rgba(3, 46, 71, 0.01);
+}
+.card-img-top {
+width: 100%;
+object-fit: cover;
+border-top-right-radius: 20px;
+border-top-left-radius: 20px;
+}
+
+.produk {
+height: 45vw;
+}
+
+.card-body h5,
+.card-body p {
+font-size: 11px;
+}
+
+.harga-awal {
+color: #6F7880;
+}
+
+.card-promo-minimal {
+font-size: 9px;
+background-color: var(--main-color);
+position: absolute;
+font-weight: bold;
+}
+
+.card-promo-potongan {
+font-size: 9px;
+background-color: var(--main-color);
+border-radius: 10px;
+position: absolute;
+font-weight: bold;
+}
+
+/* Footer */
+footer {
+background-color: #26171B;
+margin-top: 50px;
+line-height: 5px;
+border-top-left-radius: 20px;
+border-top-right-radius: 20px;
+}
+footer h2 {
+font-weight: bolder;
+}
+
+/* Font Size */
+.card-alamat a,
+.detail-profile p,
+.detail-profile a,
+footer p,
+table,
+.keranjang h5,
+.keranjang span,
+.keranjang a,
+.ringkasan-harga h5,
+.ringkasan-harga span,
+.ringkasan-harga button,
+.menu-transaksi a {
+font-size: 75%;
+}
+h5 {
+font-size: 100%;
+}
+/* Keranjang */
+/* Keranjang produk */
+.keranjang-produk{
+border: 3px solid #FEFEFE;
+border-radius: 20px;
+background-color: #FFFFFF;
+box-shadow: 0px 4px 10px rgba(3, 46, 71, 0.01);
+}
+.keranjang-produk img {
+width: 80%;
+object-fit: cover;
+border-radius: 20px;
+max-height: 40vw;
+}
+/*Card Invoice */
+ul.list-group, ul.list-group-flush,.card{
+border: 3px solid #FEFEFE;
+border-radius: 20px;
+background-color: #FFFFFF;
+box-shadow: 0px 4px 10px rgba(3, 46, 71, 0.01);
+}
+.card-invoice,ul.list-group, ul.list-group-flush,.card {
+border: 3px solid #FEFEFE;
+border-radius: 20px;
+background-color: #FFFFFF;
+box-shadow: 0px 4px 10px rgba(3, 46, 71, 0.01);
+}
+.card-invoice .list-group-item p{
+line-height: 1.2;
+}
+/* Card Ringkasan Harga */
+.ringkasan-harga {
+border: 3px solid #FEFEFE;
+border-radius: 20px;
+background-color: #FFFFFF;
+box-shadow: 0px 4px 10px rgba(3, 46, 71, 0.01);
+}
+
+/* detail produk */
+/* img detail produk */
+.img-produk img {
+width: 100%;
+object-fit: cover;
+border-radius: 20px;
+}
+.besar {
+height: 100vw;
+}
+.kecil {
+height: 25vw;
+}
+.detail-produk h5,
+.detail-produk p,
+.detail-produk button,
+.deskripsi-produk h5,
+.deskripsi-produk p,
+.login label,
+.login button,
+.login p,.card-invoice .list-group-item p {
+font-size: 80%;
+}
+/* Login */
+.login {
+background-color: #FEFEFE;
+border:1px solid #FEFEFE;
+border-radius: 20px;
+box-shadow: 0px 4px 10px rgba(3, 46, 71,0.01);
+}
+.login input, .login textarea, .login select{
+    background-color: #EAEFF2;
+    border:1px solid #EAEFF2;
+    border-radius: 10px;
+}
+.login input:focus, .login textarea:focus, .login select:focus{
+    background-color: #EAEFF2;
+}
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {
+border-color: #8C8888;
+box-shadow: none;
+outline: 0 none;
+}
+
+/* detail produk*/
+.kecil:hover{
+opacity: 0.5;
+cursor: pointer;
+}
+
+.aktif{
+opacity: 0.5;
+}
+@media (min-width: 576px) {
+.btn-banner,.btn-all, .btn-alamat-pengiriman {
+font-size: 18px;
+}
+/* image banner */
+.img-banner {
+object-fit: cover;
+height: 50vw;
+}
+/* Card Kategori */
+.kategori {
+height: 20vw;
+}
+/* Card Produk*/
+.produk {
+height: 40vw;
+}
+.card-promo-minimal {
+font-size: 10px;
+}
+.card-body h5,
+.card-body p {
+font-size: 12px;
+}
+.card-promo-potongan {
+font-size: 10px;
+}
+/* Font Size */
+.card-alamat a,
+.detail-profile p,
+.detail-profile a,
+footer p,
+table,
+.teks-detail,
+.keranjang h5,
+.keranjang span,
+.keranjang a,
+.ringkasan-harga h5,
+.ringkasan-harga span,
+.ringkasan-harga button,
+.menu-transaksi a,
+.detail-produk h5,
+.detail-produk p,
+.detail-produk button,
+.deskripsi-produk h5,
+.deskripsi-produk p,
+.login label,
+.login button,
+.login p,.card-invoice .list-group-item p {
+font-size: 90%;
+}
+
+.besar {
+height: 80vw;
+}
+.kecil {
+height: 15vw;
+}
+
+.keranjang-produk img {
+max-height: 40vw;
+}
+}
+
+@media (min-width: 768px) {
+/* Beranda */
+/* Button Banner */
+.btn-banner,.btn-all, .btn-alamat-pengiriman {
+font-size: 20px;
+}
+
+.deskripsi-banner {
+font-size: 40px;
+padding-bottom: 10px;
+}
+/* Card Kategori */
+.kategori {
+height: 20vw;
+}
+/* Card Produk*/
+.produk {
+height: 35vw;
+}
+.card-body h5,
+.card-body p {
+font-size: 15px;
+}
+.card-promo-potongan {
+font-size: 11px;
+}
+footer {
+line-height: 15px;
+margin-top: 100px;
+}
+
+.keranjang-produk img {
+max-height: 40vw;
+}
+}
+
+@media (min-width: 992px) {
+/* Beranda */
+/* Nav */
+nav {
+box-shadow: none;
+border-bottom: none;
+}
+input.search {
+width: 155%;
+}
+/* Button Banner */
+.btn-banner,.btn-all {
+background-color: var(--main-color);
+font-size: 20px;
+}
+.btn-alamat-pengiriman{
+font-size: 20px;
+}
+.btn-banner:active,.btn-banner:focus {
+box-shadow: none;
+}
+/* Deskripsi Banner */
+.col-deskripsi-banner {
+position: static;
+padding-top: 120px;
+color: var(--secondary-color);
+}
+
+.deskripsi-banner {
+font-size: 40px;
+padding-bottom: 30px;
+}
+
+.markup {
+color: var(--secondary-color);
+}
+/* Card Kategori */
+.kategori {
+height: 15vw;
+}
+/* Card Produk */
+.produk {
+height: 30vw;
+}
+/* Font Size */
+.card-alamat a,
+.detail-profile p,
+.detail-profile a,
+footer p,
+table,
+.teks-detail,
+.keranjang h5,
+.keranjang span,
+.keranjang a,
+.ringkasan-harga h5,
+.ringkasan-harga span,
+.ringkasan-harga button,
+.menu-transaksi a,
+.detail-produk h5,
+.detail-produk p,
+.detail-produk button,
+.deskripsi-produk h5,
+.deskripsi-produk p,
+.login label,
+.login button,
+.login p,.card-invoice .list-group-item p {
+font-size: 100%;
+}
+.judul-konten h5 {
+font-size: 120%;
+}
+
+.keranjang-produk img {
+max-height: 40vw;
+}
+/* detail produk */
+/* img */
+.besar {
+height: 50vw;
+}
+.kecil {
+height: 10vw;
+}
+}
+
+@media (min-width: 1200px) {
+/* Card Kategori */
+.kategori {
+height: 15vw;
+}
+/* Card Produk */
+.produk {
+height: 20vw;
+}
+/* keranjang */
+.keranjang-produk img {
+max-height: 23vw;
+}
+}

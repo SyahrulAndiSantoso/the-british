@@ -1,0 +1,23 @@
+.button-tambah {
+    padding: 10px 50px;
+    background-color: #b10133;
+    border-radius: 10px;
+}
+.button-tambah:hover{
+    text-decoration: none;
+}
+.btn-maroon,.btn-maroon:hover  {
+    background-color: #b10133 !important;
+    color: white;
+}
+
+.marker {
+    visibility: hidden;
+}
+.text-maroon {
+    color: #b10133;
+}
+.card-maroon {
+    border-top: 2px solid;
+    border-color: #b10133;
+}

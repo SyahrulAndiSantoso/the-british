@@ -1,0 +1,61 @@
+@extends('layout.main_pembeli')
+@section('konten')
+<br><br>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-10 col-sm-6 col-md-5 col-lg-4 p-5 rounded-3 login">
+                <form action="{{ route('registrasiPembeli') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Nama</label>
+                        <input type="text" name="nama_user" class="form-control @error('nama_user') is-invalid @enderror" id="exampleInputEmail1" value="{{ old('nama_user') }}" />
+                        @error('nama_user')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Nomor</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">+62</span>
+                            <input type="number" name="nomor" class="form-control @error('nomor') is-invalid @enderror" value="{{ old('nomor') }}">
+                          </div>
+                        @error('nomor')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Tgl Lahir</label>
+                        <input type="date" name="tgl_lahir" class="form-control @error('tgl_lahir') is-invalid @enderror" id="exampleInputEmail1" value="{{ old('tgl_lahir') }}" />
+                        @error('tgl_lahir')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" id="exampleInputEmail1" value="{{ old('email') }}" />
+                        @error('email')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Username</label>
+                        <input type="text" name="username" class="form-control @error('username') is-invalid @enderror" id="exampleInputEmail1" value="{{ old('username') }}" />
+                        @error('username')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="exampleInputPassword1" />
+                        @error('password')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="form-control btn btn-primary">
+                        Registrasi
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
