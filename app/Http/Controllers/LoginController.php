@@ -40,14 +40,14 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-            if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'role' => 'admin'])) {
-                $request->session()->regenerate();
-                return redirect()->intended('/admin/dashboard');
-            } else {
-                return redirect()
-                    ->back()
-                    ->with('title', 'Gagal');
-            }
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'role' => 'admin'])) {
+            $request->session()->regenerate();
+            return redirect()->intended('/admin/dashboard');
+        } else {
+            return redirect()
+                ->back()
+                ->with('title', 'Gagal');
+        }
     }
 
     public function authenticate_owner(Request $request)
@@ -57,14 +57,14 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-            if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'role' => 'owner'])) {
-                $request->session()->regenerate();
-                return redirect()->intended('/owner/dashboard');
-            } else {
-                return redirect()
-                    ->route('login-owner')
-                    ->with('title', 'Gagal');
-            }
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'role' => 'owner'])) {
+            $request->session()->regenerate();
+            return redirect()->intended('/owner/dashboard');
+        } else {
+            return redirect()
+                ->route('login-owner')
+                ->with('title', 'Gagal');
+        }
     }
 
     public function authenticate_kasir(Request $request)
@@ -74,14 +74,14 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-            if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'role' => 'kasir'])) {
-                $request->session()->regenerate();
-                return redirect()->intended('/kasir/dashboard');
-            } else {
-                return redirect()
-                    ->back()
-                    ->with('title', 'Gagal');
-            }
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'role' => 'kasir'])) {
+            $request->session()->regenerate();
+            return redirect()->intended('/kasir/dashboard');
+        } else {
+            return redirect()
+                ->back()
+                ->with('title', 'Gagal');
+        }
     }
 
     public function authenticate_Pembeli(Request $request)
@@ -93,8 +93,7 @@ class LoginController extends Controller
 
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'role' => 'pembeli'])) {
             $request->session()->regenerate();
-            return redirect()
-                ->intended('/');
+            return redirect()->intended('/');
         } else {
             return redirect()
                 ->back()
@@ -122,7 +121,7 @@ class LoginController extends Controller
             $request->session()->regenerateToken();
             Session::flush();
             return redirect()->route('login-owner');
-        }elseif(auth()->user()->role === 'pembeli'){
+        } elseif (auth()->user()->role === 'pembeli') {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
