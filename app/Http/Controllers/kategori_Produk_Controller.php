@@ -18,7 +18,7 @@ class kategori_Produk_Controller extends Controller
     public function index()
     {
         $judul = 'Kategori Produk';
-        return view('admin.Kategori_Produk', compact('judul'));
+        return view('admin.kategori_Produk', compact('judul'));
     }
 
     public function data_Kategori_Produk()
