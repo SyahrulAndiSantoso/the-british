@@ -320,6 +320,7 @@ class produk_Controller extends Controller
         ])
         ->latest('produks.id_produk')
         ->get();
+        dd($produk);
         return view('pembeli.produk', compact('produk', 'judul', 'kategori'));
     }
 
