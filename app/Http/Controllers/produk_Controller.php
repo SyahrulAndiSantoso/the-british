@@ -8,7 +8,6 @@ use App\Models\Kategori_Produk;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
-use App\Exports\KotaExport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -71,7 +70,7 @@ class produk_Controller extends Controller
         $judul = 'Produk';
         $kategori = Kategori_Produk::all();
         $data = Produk::find($produk->id_produk);
-        return view('admin.edit.edit_produk', compact('judul', 'data', 'kategori'));
+        return view('admin.edit.edit_Produk', compact('judul', 'data', 'kategori'));
     }
 
     public function proses_Edit(Request $request)
