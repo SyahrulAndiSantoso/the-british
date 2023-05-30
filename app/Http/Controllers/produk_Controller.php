@@ -337,6 +337,7 @@ class produk_Controller extends Controller
                 'promos.id_promo' => $id_promo,
             ])
             ->get();
+            dd($produk);
         return view('pembeli.produk', compact('produk', 'judul', 'kategori'));
     }
 
