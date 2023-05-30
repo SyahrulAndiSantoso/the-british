@@ -312,7 +312,7 @@ class produk_Controller extends Controller
     {
         $judul = 'Semua Produk';
         $kategori = Kategori_Produk::select('nama_kategori_produk')->get();
-        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.harga', 'produks.thumbnail', 'produks.merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.harga', 'produks.thumbnail', 'produks.merk', 'produks.stok', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
             ->where([
@@ -328,7 +328,7 @@ class produk_Controller extends Controller
         $id_promo = decrypt($id);
         $judul = 'Semua Produk Promo';
         $kategori = Kategori_Produk::select('nama_kategori_produk')->get();
-        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk', 'produks.stok', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
             ->leftjoin('kategori__produks', 'produks.kategori_produk_id', '=', 'kategori__produks.id_kategori_produk')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
@@ -337,7 +337,6 @@ class produk_Controller extends Controller
                 'promos.id_promo' => $id_promo,
             ])
             ->get();
-            dd($produk);
         return view('pembeli.produk', compact('produk', 'judul', 'kategori'));
     }
 
