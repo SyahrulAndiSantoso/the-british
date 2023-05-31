@@ -391,7 +391,6 @@ class penjualan_Offline_Controller extends Controller
             ->join('produks', 'produks.id_produk', '=', 'detail__penjualan__offlines.produk_id')
             ->join('penjualan__offlines', 'penjualan__offlines.id_penjualan_offline', '=', 'detail__penjualan__offlines.penjualan_offline_id')
             ->where(['penjualan__offlines.id_penjualan_offline' => $id])
-            ->latest()
             ->get();
         if (auth()->user()->role == 'kasir') {
             return DataTables::of($data)
