@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Penjualan_Online extends Model
 {
     use HasFactory;
+    public $incrementing = false;
     protected $table = 'penjualan__onlines';
+    protected $dates = ['tgl'];
     protected $primaryKey = 'id_penjualan_online';
-    protected $fillable = ['user_id', 'alamat_id', 'total', 'sub_total', 'status', 'tgl', 'ongkir','va_number'];
+    protected $keyType = 'string';
+    protected $fillable = ['id_penjualan_online','user_id', 'alamat_id', 'total', 'sub_total', 'status', 'tgl', 'ongkir','va_number'];
 
     public function user()
     {
@@ -25,6 +28,11 @@ class Penjualan_Online extends Model
     public function alamat()
     {
         return $this->belongsTo(Alamat::class, 'alamat_id', 'id_alamat');
+    }
+
+    public function pengembalian_dana()
+    {
+        return $this->hasMany(Pengembalian_Dana::class, 'pengembalian_dana_id', 'id_pengembalian_dana');
     }
 
     public function getPenjualanOnline()
@@ -78,11 +86,11 @@ class Penjualan_Online extends Model
 
     public function getDetailKeranjang()
     {
-        return Detail_Penjualan_Online::select('produks.nama_produk', 'produks.thumbnail', 'produks.ukuran', 'produks.stok', 'produks.harga', 'produks.merk', 'detail__penjualan__onlines.diskon', 'detail__penjualan__onlines.id_detail_penjualan_online', 'promos.nama_promo', 'promos.tipe')
+        return Detail_Penjualan_Online::select('produks.nama_produk', 'produks.thumbnail', 'ukurans.ukuran', 'produks.stok', 'produks.harga', 'merks.nama_merk', 'detail__penjualan__onlines.diskon', 'detail__penjualan__onlines.id_detail_penjualan_online')
             ->leftjoin('penjualan__onlines', 'penjualan__onlines.id_penjualan_online', '=', 'detail__penjualan__onlines.penjualan_online_id')
             ->leftjoin('produks', 'produks.id_produk', '=', 'detail__penjualan__onlines.produk_id')
-            ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
-            ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
+            ->leftjoin('merks', 'produks.merk_id', '=', 'merks.id_merk')
+            ->leftjoin('ukurans', 'produks.ukuran_id', '=', 'ukurans.id_ukuran')
             ->leftjoin('users', 'users.id_user', '=', 'penjualan__onlines.user_id')
             ->where([
                 'users.id_user' => auth()->user()->id_user,

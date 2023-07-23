@@ -66,7 +66,7 @@ class keranjang_Controller extends Controller
         if ($cekProduk->count() != 0) {
             return back()->with('gagal', 'Gagal');
         } else {
-            if ($produk->stok == 'ada') {
+            if ($produk->stok == 1) {
                 $dataPenjualanOnline = $this->keranjangModel->getPenjualanOnline();
                 $detailPromo = Detail_Promo::select('promos.tipe', 'promos.id_promo', 'promos.jumlah', 'promos.diskon')
                     ->join('promos', 'promos.id_promo', '=', 'detail__promos.promo_id')
@@ -90,19 +90,22 @@ class keranjang_Controller extends Controller
                                 'diskon' => $detailPromo->diskon,
                             ]);
                         } elseif ($detailPromo->tipe == 'minimal pembelian') {
-                            $keranjang = Detail_Penjualan_Online::select('detail__penjualan__onlines.id_detail_penjualan_online', 'detail__penjualan__onlines.diskon', 'produks.id_produk')
+                            $keranjang = Detail_Penjualan_Online::select('detail__penjualan__onlines.id_detail_penjualan_online', 'detail__penjualan__onlines.diskon', 'detail__penjualan__onlines.penjualan_online_id','produks.id_produk')
                                 ->join('penjualan__onlines', 'penjualan__onlines.id_penjualan_online', '=', 'detail__penjualan__onlines.penjualan_online_id')
+                                ->join('users', 'users.id_user', '=', 'penjualan__onlines.user_id')
                                 ->join('produks', 'produks.id_produk', '=', 'detail__penjualan__onlines.produk_id')
                                 ->join('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
                                 ->join('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
                                 ->where('penjualan__onlines.status', 2)
+                                ->where('users.id_user',auth()->user()->id_user)
                                 ->where('promos.id_promo', $detailPromo->id_promo)
                                 ->get();
-
+                           
                             if ($keranjang->count() % $detailPromo->jumlah == 0) {
+                              
                                 foreach ($keranjang as $data) {
                                     $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
-                                        'penjualan_online_id' => $dataPenjualanOnline->id_penjualan_online,
+                                        'penjualan_online_id' => $data->penjualan_online_id,
                                         'produk_id' => $data->id_produk,
                                     ])->first();
                                     $updateDetailPenjualanOnline->update([
@@ -113,7 +116,10 @@ class keranjang_Controller extends Controller
                         }
                     }
                 } else {
+                    $idPenjualanOnline = Penjualan_Online::latest('id_penjualan_online')->first();
+                    $idBaru = $idPenjualanOnline ? sprintf('INV%06d', substr($idPenjualanOnline->id_penjualan_online, 3) + 1) : 'INV000001';
                     $dataTambahPenjualanOnline = [
+                        'id_penjualan_online'=>$idBaru,
                         'user_id' => auth()->user()->id_user,
                         'status' => 2,
                     ];
@@ -132,19 +138,21 @@ class keranjang_Controller extends Controller
                                 'diskon' => $detailPromo->diskon,
                             ]);
                         } elseif ($detailPromo->tipe == 'minimal pembelian') {
-                            $keranjang = Detail_Penjualan_Online::select('detail__penjualan__onlines.id_detail_penjualan_online', 'detail__penjualan__onlines.diskon', 'produks.id_produk')
+                            $keranjang = Detail_Penjualan_Online::select('detail__penjualan__onlines.id_detail_penjualan_online', 'detail__penjualan__onlines.diskon','detail__penjualan__onlines.penjualan_online_id', 'produks.id_produk')
                                 ->join('penjualan__onlines', 'penjualan__onlines.id_penjualan_online', '=', 'detail__penjualan__onlines.penjualan_online_id')
+                                ->join('users', 'users.id_user', '=', 'penjualan__onlines.user_id')
                                 ->join('produks', 'produks.id_produk', '=', 'detail__penjualan__onlines.produk_id')
                                 ->join('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
                                 ->join('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
                                 ->where('penjualan__onlines.status', 2)
+                                ->where('users.id_user',auth()->user()->id_user)
                                 ->where('promos.id_promo', $detailPromo->id_promo)
                                 ->get();
 
                             if ($keranjang->count() % $detailPromo->jumlah == 0) {
                                 foreach ($keranjang as $data) {
                                     $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
-                                        'penjualan_online_id' => $dataPenjualanOnline->id_penjualan_online,
+                                        'penjualan_online_id' => $data->penjualan_online_id,
                                         'produk_id' => $data->id_produk,
                                     ])->first();
                                     $updateDetailPenjualanOnline->update([
@@ -174,7 +182,8 @@ class keranjang_Controller extends Controller
                 }
 
                 $dataPenjualanOnline->update($dataEditTotal);
-                return back()->with('title', 'Berhasil');
+                return redirect()->back()->with('title', 'Berhasil');
+                
             } else {
                 return redirect()
                     ->route('beranda')
@@ -186,9 +195,8 @@ class keranjang_Controller extends Controller
     public function proses_Hapus_Keranjang($id)
     {
         $id_detail_penjualan_online = decrypt($id);
-        $dataDetailPenjualanOnline = Detail_Penjualan_Online::without(['penjualan_online', 'produk'])->find($id_detail_penjualan_online);
-        $dataDetailPenjualanOnline->delete($id_detail_penjualan_online);
-
+        $dataDetailPenjualanOnline = Detail_Penjualan_Online::select('id_detail_penjualan_online','produk_id','penjualan_online_id')->without(['penjualan_online', 'produk'])->where('id_detail_penjualan_online',$id_detail_penjualan_online)->first();
+     
         $detailPromo = Detail_Promo::select('promos.tipe', 'promos.id_promo', 'promos.jumlah', 'promos.diskon')
             ->join('promos', 'promos.id_promo', '=', 'detail__promos.promo_id')
             ->where([
@@ -197,22 +205,28 @@ class keranjang_Controller extends Controller
             ])
             ->first();
 
+        $dataDetailPenjualanOnline->delete($id_detail_penjualan_online);
+
+        
+
         if ($detailPromo) {
             if ($detailPromo->tipe == 'minimal pembelian') {
-                $keranjang = Detail_Penjualan_Online::select('detail__penjualan__onlines.id_detail_penjualan_online', 'detail__penjualan__onlines.diskon', 'produks.id_produk')
+                $keranjang = Detail_Penjualan_Online::select('detail__penjualan__onlines.id_detail_penjualan_online', 'detail__penjualan__onlines.diskon','detail__penjualan__onlines.penjualan_online_id', 'produks.id_produk')
                     ->join('penjualan__onlines', 'penjualan__onlines.id_penjualan_online', '=', 'detail__penjualan__onlines.penjualan_online_id')
+                    ->join('users', 'users.id_user', '=', 'penjualan__onlines.user_id')
                     ->join('produks', 'produks.id_produk', '=', 'detail__penjualan__onlines.produk_id')
                     ->join('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
                     ->join('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
                     ->where('penjualan__onlines.status', 2)
+                    ->where('users.id_user',auth()->user()->id_user)
                     ->where('promos.id_promo', $detailPromo->id_promo)
                     ->get();
 
-                $index = 0;
+               
                 if ($keranjang->count() % $detailPromo->jumlah == 0) {
                     foreach ($keranjang as $data) {
                         $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
-                            'penjualan_online_id' => $dataDetailPenjualanOnline->penjualan_online_id,
+                            'penjualan_online_id' => $data->penjualan_online_id,
                             'produk_id' => $data->id_produk,
                         ])->first();
                         $updateDetailPenjualanOnline->update([
@@ -220,33 +234,41 @@ class keranjang_Controller extends Controller
                         ]);
                     }
                 } else {
-                    if ($keranjang->count() > 1) {
+                    $index = $keranjang->count();
+                    if ($keranjang->count() > $detailPromo->jumlah) {
                         foreach ($keranjang as $data) {
-                            $index++;
-                            if ($index == $keranjang->count()) {
+                           
+                            if ($index % $detailPromo->jumlah==0) {
+                                while($index!=0){
+                                    $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
+                                        'penjualan_online_id' => $data->penjualan_online_id,
+                                        'produk_id' => $data->id_produk,
+                                    ])->first();
+                                    $updateDetailPenjualanOnline->update([
+                                        'diskon' => $detailPromo->diskon,
+                                    ]);
+                                    $index--;
+                                }
+                                
+                            }else{
                                 $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
-                                    'penjualan_online_id' => $dataDetailPenjualanOnline->penjualan_online_id,
+                                    'penjualan_online_id' =>  $data->penjualan_online_id,
                                     'produk_id' => $data->id_produk,
                                 ])->first();
                                 $updateDetailPenjualanOnline->update([
                                     'diskon' => 0,
                                 ]);
-                                break;
+                                $index--;
                             }
-                            $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
-                                'penjualan_online_id' => $dataDetailPenjualanOnline->penjualan_online_id,
-                                'produk_id' => $data->id_produk,
-                            ])->first();
-                            $updateDetailPenjualanOnline->update([
-                                'diskon' => $detailPromo->diskon,
-                            ]);
+                           
                         }
-                    } elseif ($keranjang->count() == 1) {
+                    } else {
                         foreach ($keranjang as $data) {
                             $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
-                                'penjualan_online_id' => $dataDetailPenjualanOnline->penjualan_online_id,
+                                'penjualan_online_id' => $data->penjualan_online_id,
                                 'produk_id' => $data->id_produk,
                             ])->first();
+                        
                             $updateDetailPenjualanOnline->update([
                                 'diskon' => 0,
                             ]);
@@ -276,15 +298,18 @@ class keranjang_Controller extends Controller
 
     public function checkout()
     {
-        $detailKeranjang = $this->keranjangModel->getDetailKeranjang();
-        $status = true;
-        foreach ($detailKeranjang as $row) {
-            if ($row->stok == 'tidak ada') {
-                $status = false;
-                break;
-            }
-        }
-        if ($status) {
+        $status = Detail_Penjualan_Online::select('produks.nama_produk')
+        ->leftjoin('penjualan__onlines', 'penjualan__onlines.id_penjualan_online', '=', 'detail__penjualan__onlines.penjualan_online_id')
+        ->leftjoin('produks', 'produks.id_produk', '=', 'detail__penjualan__onlines.produk_id')
+        ->leftjoin('users', 'users.id_user', '=', 'penjualan__onlines.user_id')
+        ->where([
+            'users.id_user' => auth()->user()->id_user,
+            'penjualan__onlines.status' => 2,
+            'produks.stok' => 0,
+        ])
+        ->get();
+
+        if ($status->count()==0) {
             return redirect()->route('transaksi');
         } else {
             return back();

@@ -19,7 +19,7 @@
                                     <b>{{ $dataDetailKeranjang->nama_produk }}</b>
                                 </h5>
                                 <div class="col-12 mb-lg-4 mb-sm-2 d-flex justify-content-between">
-                                    <span class="mb-2">{{ $dataDetailKeranjang->merk }}</span>
+                                    <span class="mb-2">{{ $dataDetailKeranjang->nama_merk }}</span>
                                     <span class="mb-2">Ukuran {{ $dataDetailKeranjang->ukuran }}</span>
                                 </div>
                                 <div class="col-12 d-flex mb-lg-4 mb-sm-2 justify-content-between">
@@ -39,12 +39,15 @@
                                     @endif
 
                                 </div>
+                                <div class="col-12 mb-lg-4 mb-sm-2 d-flex justify-content-between">
+                                    <span class="mb-2">Qty 1</span>
+                                </div>
                                 <br />
                                 <a href="{{ route('hapusKeranjang', encrypt($dataDetailKeranjang->id_detail_penjualan_online)) }}"
                                     class="text-decoration-none" style="color:#973535;"><i
                                         class="bi bi-trash-fill me-1"></i>Hapus</a>
 
-                                @if ($dataDetailKeranjang->stok == 'tidak ada')
+                                @if ($dataDetailKeranjang->stok == 0)
                                     <div class="alert alert-danger" role="alert">
                                         Stok Produk Habis !
                                     </div>
@@ -67,7 +70,7 @@
                             <span>Diskon</span>
 
                             <span class="text-primary">
-                                @if ($diskon)
+                                @if ($diskon->count()!=0)
                                     @foreach ($diskon as $row)
                                         @if ($diskon->count() == $loop->iteration)
                                             {{ $row->diskon }} %
@@ -76,7 +79,7 @@
                                         @endif
                                     @endforeach
                                 @else
-                                    0
+                                    Tidak Ada
                                 @endif
                             </span>
                         </div>

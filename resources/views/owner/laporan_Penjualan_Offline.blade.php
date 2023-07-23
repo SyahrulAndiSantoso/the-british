@@ -47,7 +47,7 @@
                                 </form>
                                 @isset($hasil)
                                     <div class="alert alert-primary text-center" role="alert">
-                                        TOTAL KESELURUHAN : <b>Rp{{ number_format($total->total_keseluruhan, 0, ',', '.') }}</b>
+                                        TOTAL KESELURUHAN : <b>Rp{{ number_format($total->total_bukan_diskon+$total->total_diskon, 0, ',', '.')  }}</b>
                                     </div>
 
                                     <div class="table-responsive">
@@ -56,17 +56,36 @@
                                             <thead>
                                                 <tr>
                                                     <th>No</th>
-                                                    <th>Tanggal</th>
-                                                    <th>Total</th>
+                                                    <th>Kode Produk</th>
+                                                    <th>Nama Produk</th>
+                                                    <th>Diskon</th>
+                                                    <th>Harga</th>
+                                                    <th>Qty</th>
+                                                    <th>Merk</th>
+                                                    <th>Kategori Produk</th>
+                                                    <th>Total Harga</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php $no = 1; ?>
                                                 @foreach ($hasil as $data)
-                                                    <tr>
-                                                        <td>{{ $no++ }}</td>
-                                                        <td>{{ $data->tgl }}</td>
-                                                        <td>Rp{{ number_format($data->total, 0, ',', '.') }}</td>
+                                                <tr>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ $data->id_produk }}</td>
+                                                        <td>{{ $data->nama_produk }}</td>
+                                                       
+                                                        @if($data->diskon>0)
+                                                        <td>{{ $data->diskon }} %</td>
+                                                       <?php $hargaAwal = $data->harga;?>
+                                                       <?php $data->harga = $data->harga - ($data->harga * $data->diskon) / 100;?>
+                                                        <td><span class="coret">Rp{{ number_format($hargaAwal, 0, ',', '.') }}</span> Rp{{ number_format($data->harga, 0, ',', '.') }}</td>
+                                                        @else
+                                                        <td>Tidak Ada</td>
+                                                        <td>Rp{{ number_format($data->harga, 0, ',', '.') }}</td>
+                                                        @endif
+                                                        <td>1</td>
+                                                        <td>{{ $data->nama_merk }}</td>
+                                                        <td>{{ $data->nama_kategori_produk }}</td>
+                                                        <td>Rp{{ number_format($data->harga, 0, ',', '.') }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>

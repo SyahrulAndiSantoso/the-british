@@ -16,8 +16,11 @@ class CreatePembelianBallsTable extends Migration
         Schema::create('pembelian__balls', function (Blueprint $table) {
             $table->bigIncrements('id_pembelian_ball');
             $table->string('nama_ball');
+            $table->string('supplier')->nullable();
             $table->date('tgl_beli');
             $table->integer('total_pakaian');
+            $table->integer('layak_pakai');
+            $table->integer('tidak_layak_pakai');
             $table->timestamps();
         });
     }

@@ -1,5 +1,15 @@
 @extends('layout.main_admin')
 @section('konten')
+@if (session()->has('aksi'))
+   
+    <script>
+            iziToast.success({
+            title: 'Berhasil',
+            message: 'Membatalkan Detail Penjualan Online',
+            position: 'topRight'});
+        </script>
+   
+@endif
     <section class="section">
         <div class="section-body">
             <div class="invoice">
@@ -67,6 +77,7 @@
                                             <th>Merk</th>
                                             <th>Ukuran</th>
                                             <th>Harga</th>
+                                            <th>Qty</th>
                                             <th>Diskon</th>
                                             <th>status</th>
                                             <th>Aksi</th>
@@ -122,20 +133,23 @@
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex'
                 }, {
-                    data: 'produk.nama_produk',
-                    name: 'produk.nama_produk'
+                    data: 'nama_produk',
+                    name: 'nama_produk'
                 }, {
                     data: 'gambar',
                     name: 'gambar'
                 }, {
-                    data: 'produk.merk',
-                    name: 'produk.merk'
+                    data: 'nama_merk',
+                    name: 'nama_merk'
                 }, {
-                    data: 'produk.ukuran',
-                    name: 'produk.ukuran'
+                    data: 'ukuran',
+                    name: 'ukuran'
                 }, {
-                    data: 'produk.harga',
-                    name: 'produk.harga'
+                    data: 'harga',
+                    name: 'harga'
+                }, {
+                    data: 'qty',
+                    name: 'qty'
                 }, {
                     data: 'diskon',
                     name: 'diskon'
@@ -158,20 +172,20 @@
                 paging: false,
                 info: false,
                 columns: [{
-                    data: 'alamat.provinsi',
-                    name: 'alamat.provinsi'
+                    data: 'provinsi',
+                    name: 'provinsi'
                 }, {
-                    data: 'alamat.kabupaten',
-                    name: 'alamat.kabupaten'
+                    data: 'kabupaten',
+                    name: 'kabupaten'
                 }, {
-                    data: 'alamat.kecamatan',
-                    name: 'alamat.kecamatan'
+                    data: 'kecamatan',
+                    name: 'kecamatan'
                 }, {
-                    data: 'alamat.kelurahan',
-                    name: 'alamat.kelurahan'
+                    data: 'kelurahan',
+                    name: 'kelurahan'
                 }, {
-                    data: 'alamat.alamat_detail',
-                    name: 'alamat.alamat_detail'
+                    data: 'alamat_detail',
+                    name: 'alamat_detail'
                 }]
             });
         });

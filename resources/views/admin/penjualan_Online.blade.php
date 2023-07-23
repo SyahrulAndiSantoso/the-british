@@ -1,5 +1,22 @@
 @extends('layout.main_admin')
 @section('konten')
+@if (session()->has('aksi'))
+    @if(session('aksi') == 'Paket Dikirim')
+        <script>
+            iziToast.success({
+            title: 'Berhasil',
+            message: 'Paket Dikirim',
+            position: 'topRight'});
+        </script>
+    @elseif(session('aksi') == 'Membatalkan')
+    <script>
+            iziToast.success({
+            title: 'Berhasil',
+            message: 'Membatalkan Penjualan Online',
+            position: 'topRight'});
+        </script>
+    @endif
+@endif
     <div class="row mb-2">
         <div class="col-6 col-md-6 col-lg-6">
             <h3 class="text-dark">Daftar Penjualan Online</h3>
@@ -18,6 +35,7 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Kode Penjualan Online</th>
                                                 <th>Nama Pembeli</th>
                                                 <th>Tanggal</th>
                                                 <th>Total</th>
@@ -56,6 +74,9 @@
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex'
                 }, {
+                    data: 'id_penjualan_online',
+                    name: 'id_penjualan_online'
+                }, {
                     data: 'user.nama_user',
                     name: 'user.nama_user'
                 }, {
@@ -73,5 +94,6 @@
                 }]
             });
         });
+
     </script>
 @endsection

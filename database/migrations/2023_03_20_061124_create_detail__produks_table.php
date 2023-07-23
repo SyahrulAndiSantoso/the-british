@@ -15,7 +15,7 @@ class CreateDetailProduksTable extends Migration
     {
         Schema::create('detail__produks', function (Blueprint $table) {
             $table->bigIncrements('id_detail_produk');
-            $table->unsignedBigInteger('produk_id');
+            $table->string('produk_id');
             $table->string('gambar');
             $table->timestamps();
             $table->foreign('produk_id')->references('id_produk')->on('produks');

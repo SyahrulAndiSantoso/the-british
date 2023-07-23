@@ -28,12 +28,12 @@
         </div>
     @enderror
 
-    @error('ukuran')
+    @error('ukuran_id')
         <div class="flash-data" data-title="Gagal" data-aksi="Menambahkan" data-halaman="Produk">
         </div>
     @enderror
 
-    @error('merk')
+    @error('merk_id')
         <div class="flash-data" data-title="Gagal" data-aksi="Menambahkan" data-halaman="Produk">
         </div>
     @enderror
@@ -105,7 +105,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Harga</label>
-                            <input type="number" class="form-control @error('harga') is-invalid @enderror"
+                            <input type="text" class="form-control @error('harga') is-invalid @enderror"
                                 value="{{ old('harga') }}" id="harga" name="harga">
                             @error('harga')
                                 <div class="text-danger">{{ $message }}</div>
@@ -114,18 +114,38 @@
 
                         <div class="mb-3">
                             <label class="form-label">Ukuran</label>
-                            <input type="text" class="form-control @error('ukuran') is-invalid @enderror"
-                                value="{{ old('ukuran') }}" id="ukuran" name="ukuran">
-                            @error('ukuran')
+                                <select class="js-example-basic-single form-control @error('ukuran_id') is-invalid @enderror"
+                                name="ukuran_id" id="ukuran_id">
+                                <option selected value="">Pilih Ukuran</option>
+                                @foreach ($ukuran as $row)
+                                    @if ($row->id_ukuran == old('ukuran_id'))
+                                        <option value="{{ $row->id_ukuran }}" selected>
+                                            {{ $row->ukuran }}
+                                    @endif
+                                    <option value="{{ $row->id_ukuran }}">{{ $row->ukuran }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('ukuran_id')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Merk</label>
-                            <input type="text" class="form-control @error('merk') is-invalid @enderror"
-                                value="{{ old('merk') }}" id="merk" name="merk">
-                            @error('merk')
+                            <select class="js-example-basic-single form-control @error('merk_id') is-invalid @enderror"
+                            name="merk_id" id="merk_id">
+                            <option selected value="">Pilih Merk</option>
+                                @foreach ($merk as $row)
+                                    @if ($row->id_merk == old('merk_id'))
+                                        <option value="{{ $row->id_merk }}" selected>
+                                            {{ $row->nama_merk }}
+                                    @endif
+                            <option value="{{ $row->id_merk }}">{{ $row->nama_merk }}
+                            </option>
+                                @endforeach
+                            </select>
+                            @error('merk_id')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
@@ -170,6 +190,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>No</th>
+                                                    <th>Kode Produk</th>
                                                     <th>Nama Produk</th>
                                                     <th>Thumbnail</th>
                                                     <th>Stok</th>
@@ -178,10 +199,33 @@
                                                     <th>Ukuran</th>
                                                     <th>Merk</th>
                                                     <th>Deskripsi</th>
+                                                    <th>Barcode</th>
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                            @foreach ($produk as $rowProduk)
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $rowProduk->id_produk }}</td>
+                                                    <td>{{ $rowProduk->nama_produk }}</td>
+                                                    <td> <img src="{{ asset('storage/' . "$rowProduk->thumbnail") }}" width="100"/> </td>
+                                                    <td>{{ $rowProduk->stok }}</td>
+                                                    <td>{{ $rowProduk->nama_kategori_produk }}</td>
+                                                    <td>Rp {{ number_format($rowProduk->harga, 0, ',', '.') }}</td>
+                                                    <td>{{ $rowProduk->ukuran }}</td>
+                                                    <td>{{ $rowProduk->nama_merk }}</td>
+                                                    <td>{!! $rowProduk->deskripsi !!}</td>
+                                                    <td>{!! DNS1D::getBarcodeHTML($rowProduk->id_produk, 'C128') !!}
+                                                      <center>  {{ $rowProduk->id_produk }}</center>
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{route('viewEditProduk', $rowProduk->id_produk)}}" class="btn btn-warning"><i class="bi bi-pencil-square"></i>Edit</a>
+                                                        <a href="{{route('hapusProduk', $rowProduk->id_produk)}}" class="btn btn-danger"><i class="bi bi-trash3-fill"></i>Hapus</a>
+                                                        <a href="{{route('viewDetailProduk', $rowProduk->id_produk)}}" class="btn btn-primary"><i class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -197,49 +241,15 @@
 @section('yajra-default')
     <script>
         $(document).ready(function() {
+          
             $('#example').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{{ route('dataProduk') }}',
-                aoColumnDefs: [{
-                    'bSortable': false,
-                    'aTargets': [0]
-                }, {
-                    'bSearchable': false,
-                    'aTargets': [0]
-                }],
-                columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex'
-                }, {
-                    data: 'nama_produk',
-                    name: 'nama_produk'
-                }, {
-                    data: 'thumbnail',
-                    name: 'thumbnail'
-                }, {
-                    data: 'stok',
-                    name: 'stok'
-                }, {
-                    data: 'kategori_produk.nama_kategori_produk',
-                    name: 'kategori_produk.nama_kategori_produk'
-                }, {
-                    data: 'harga',
-                    name: 'harga'
-                }, {
-                    data: 'ukuran',
-                    name: 'ukuran'
-                }, {
-                    data: 'merk',
-                    name: 'merk'
-                }, {
-                    data: 'deskripsi',
-                    name: 'deskripsi'
-                }, {
-                    data: 'aksi',
-                    name: 'aksi'
-                }]
             });
         });
+        const harga = document.querySelector('form #harga');
+        harga.addEventListener('keyup',function(){
+            let dataHarga = harga.value;
+            dataHarga = dataHarga.replace(/\D/g, '');
+            harga.value = new Intl.NumberFormat('en-US').format(dataHarga);
+        })
     </script>
 @endsection

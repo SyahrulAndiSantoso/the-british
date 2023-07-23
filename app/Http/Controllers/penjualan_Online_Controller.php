@@ -49,13 +49,11 @@ class penjualan_Online_Controller extends Controller
                             '" class="btn btn-primary"><i
             class="bi bi-eye-fill mr-2"></i>Lihat Detail</a> <a href="https://wa.me/' .
                             $penjualanOnline->user->nomor .
-                            '" class="btn btn-success"><i class="bi bi-whatsapp mr-2"></i>Whatsapp</a>';
-                    } elseif ($penjualanOnline->status == 4) {
-                        return '<a href="' .
-                            route('viewDetailPenjualanOnline', $penjualanOnline->id_penjualan_online) .
-                            '" class="btn btn-primary"><i
-        class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
-                    } else {
+                            '" class="btn btn-success"><i class="bi bi-whatsapp mr-2"></i>Whatsapp</a>
+                            <a href="' .
+                            route('viewTambahPengembalianDanaAdmin', $penjualanOnline->id_penjualan_online) .
+                            '" class="btn btn-warning"><i class="bi bi-cash mr-2"></i>Pengembalian Dana</a>';
+                    } elseif($penjualanOnline->status == 6) {
                         return '<a href="' .
                             route('membatalkanPenjualanOnline', $penjualanOnline->id_penjualan_online) .
                             '" class="' .
@@ -64,7 +62,24 @@ class penjualan_Online_Controller extends Controller
                     class="bi bi-x"></i>Membatalkan</a> <a href="' .
                             route('viewDetailPenjualanOnline', $penjualanOnline->id_penjualan_online) .
                             '" class="btn btn-primary"><i
+            class="bi bi-eye-fill mr-2"></i>Lihat Detail</a><a href="' .
+            route('paketDikirim', $penjualanOnline->id_penjualan_online) .
+            '" class="btn btn-dark"><i class="bi bi-truck mr-2"></i>Paket Dikirim</a>';
+                    }elseif($penjualanOnline->status == 7||$penjualanOnline->status == 1||$penjualanOnline->status == 4||$penjualanOnline->status == 3){
+                        return '<a href="' .
+                            route('viewDetailPenjualanOnline', $penjualanOnline->id_penjualan_online) .
+                            '" class="btn btn-primary"><i
             class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
+                    }elseif($penjualanOnline->status == 12){
+                        return '<a href="' .
+                        route('viewDetailPenjualanOnline', $penjualanOnline->id_penjualan_online) .
+                        '" class="btn btn-primary"><i
+        class="bi bi-eye-fill mr-2"></i>Lihat Detail</a><a href="' .
+        route('viewDetailPenjualanOnline', $penjualanOnline->id_penjualan_online) .
+        '" class="btn btn-dark"><i class="bi bi-truck mr-2"></i>Paket Dikirim</a> <a href="' .
+        route('viewTambahPengembalianDanaAdmin', $penjualanOnline->id_penjualan_online) .
+        '" style="cursor:pointer;" class="text-white btn btn-warning"><i class="bi bi-cash mr-2"></i>Pengembalian Dana</a>
+        <a href="https://wa.me/62'.$penjualanOnline->user->nomor .'" class="btn btn-success"><i class="bi bi-whatsapp mr-2"></i>Whatsapp</a>';
                     }
                 } else {
                     return '<a href="' .
@@ -77,21 +92,27 @@ class penjualan_Online_Controller extends Controller
                 return 'Rp ' . number_format($dataPenjualanOnline->total, 0, ',', '.');
             })
             ->editColumn('tgl', function ($dataPenjualanOnline) {
-                $tgl = Carbon::now($dataPenjualanOnline->updated_at);
-                return $tgl->format('d, M Y');
+                $tgl = $dataPenjualanOnline->tgl;
+                return $tgl->format('d M Y');
             })
             ->editColumn('status', function ($dataPenjualanOnline) {
                 if ($dataPenjualanOnline->status == 1) {
-                    return '<span class="text-white badge bg-success">Berhasil</span>
+                    return '<span class="text-white badge bg-success">Transaksi Berhasil</span>
                     ';
                 } elseif ($dataPenjualanOnline->status == 3) {
-                    return '<span class="text-white badge bg-primary">Pending</span>
+                    return '<span class="text-white badge bg-info">Pending</span>
                     ';
                 } elseif ($dataPenjualanOnline->status == 4) {
-                    return '<span class="text-white badge bg-danger">Expired</span>
+                    return '<span class="text-white badge bg-danger">Transaksi Expired</span>
                     ';
                 } elseif ($dataPenjualanOnline->status == 5) {
-                    return '<span class="text-white badge bg-danger">Dibatalkan</span>
+                    return '<span class="text-white badge bg-danger">Transaksi Dibatalkan</span>
+                    ';
+                } elseif($dataPenjualanOnline->status == 6||$dataPenjualanOnline->status == 12){
+                    return '<span class="text-white badge bg-info">Pembayaran Berhasil</span>
+                    ';
+                }elseif($dataPenjualanOnline->status == 7){
+                    return '<span class="text-white badge bg-dark">Paket Sedang Dikirim</span>
                     ';
                 }
             })
@@ -116,13 +137,19 @@ class penjualan_Online_Controller extends Controller
 
     public function data_Detail_Penjualan_Online($id)
     {
-        $data = Detail_Penjualan_Online::select('id_detail_penjualan_online', 'diskon', 'status', 'produk_id')
-            ->where('penjualan_online_id', $id)
-            ->with(['produk']);
+        $data = Detail_Penjualan_Online::select('detail__penjualan__onlines.id_detail_penjualan_online', 'detail__penjualan__onlines.diskon', 'detail__penjualan__onlines.status', 'detail__penjualan__onlines.produk_id','produks.id_produk', 'produks.harga','produks.thumbnail','produks.nama_produk','merks.nama_merk','ukurans.ukuran')
+            ->join('produks', 'produks.id_produk', '=', 'detail__penjualan__onlines.produk_id')
+            ->join('merks', 'produks.merk_id', '=', 'merks.id_merk')
+            ->join('ukurans', 'produks.ukuran_id', '=', 'ukurans.id_ukuran')    
+            ->where('detail__penjualan__onlines.penjualan_online_id', $id)
+            ->get();
         if (auth()->user()->role == 'admin') {
             return DataTables::of($data)
+                ->addColumn('qty', function(){
+                return '1';
+                })
                 ->addColumn('gambar', function ($detailPenjualanOnline) {
-                    $url = asset('storage/' . $detailPenjualanOnline->produk->thumbnail);
+                    $url = asset('storage/' . $detailPenjualanOnline->thumbnail);
                     return '<img src="' . $url . '" width="100" />';
                 })
                 ->editColumn('diskon', function ($detailPenjualanOnline) {
@@ -134,15 +161,20 @@ class penjualan_Online_Controller extends Controller
                 })
                 ->editColumn('status', function ($detailPenjualanOnline) {
                     if ($detailPenjualanOnline->status == 1) {
-                        return '<span class="text-white badge bg-success">Success</span>
+                        return '<span class="text-white badge bg-success">Berhasil</span>
                     ';
                     } elseif ($detailPenjualanOnline->status == 5) {
-                        return '<span class="text-white badge bg-danger">Cancel</span>
+                        return '<span class="text-white badge bg-danger">Dibatalkan</span>
                     ';
                     }
                 })
-                ->editColumn('produk.harga', function ($detailPenjualanOnline) {
-                    return 'Rp ' . number_format($detailPenjualanOnline->produk->harga, 0, ',', '.');
+                ->editColumn('harga', function ($detailPenjualanOnline) {
+                    if($detailPenjualanOnline->diskon>0){
+                        $hargaDiskon = $detailPenjualanOnline->harga - ($detailPenjualanOnline->harga * $detailPenjualanOnline->diskon) / 100;
+                        return '<span class="coret"> Rp ' . number_format($detailPenjualanOnline->harga, 0, ',', '.') . '</span> Rp ' . number_format($hargaDiskon, 0, ',', '.');
+                    }else{
+                        return 'Rp ' . number_format($detailPenjualanOnline->harga, 0, ',', '.');
+                    }
                 })
                 ->addColumn('aksi', function ($detailPenjualanOnline) {
                     if ($detailPenjualanOnline->status == 1) {
@@ -156,13 +188,16 @@ class penjualan_Online_Controller extends Controller
                         return '';
                     }
                 })
-                ->rawColumns(['gambar', 'aksi', 'status'])
+                ->rawColumns(['gambar', 'aksi', 'status','harga'])
                 ->addIndexColumn()
                 ->make(true);
         } else {
             return DataTables::of($data)
+            ->addColumn('qty', function(){
+                return '1';
+            })
                 ->addColumn('gambar', function ($detailPenjualanOnline) {
-                    $url = asset('storage/' . $detailPenjualanOnline->produk->thumbnail);
+                    $url = asset('storage/' . $detailPenjualanOnline->thumbnail);
                     return '<img src="' . $url . '" width="100" />';
                 })
                 ->editColumn('diskon', function ($detailPenjualanOnline) {
@@ -174,15 +209,15 @@ class penjualan_Online_Controller extends Controller
                 })
                 ->editColumn('status', function ($detailPenjualanOnline) {
                     if ($detailPenjualanOnline->status == 1) {
-                        return '<span class="text-white badge bg-success">Success</span>
+                        return '<span class="text-white badge bg-success">Berhasil</span>
                     ';
                     } elseif ($detailPenjualanOnline->status == 5) {
-                        return '<span class="text-white badge bg-danger">Cancel</span>
+                        return '<span class="text-white badge bg-danger">Dibatalkan</span>
                     ';
                     }
                 })
-                ->editColumn('produk.harga', function ($detailPenjualanOnline) {
-                    return 'Rp ' . number_format($detailPenjualanOnline->produk->harga, 0, ',', '.');
+                ->editColumn('harga', function ($detailPenjualanOnline) {
+                    return 'Rp ' . number_format($detailPenjualanOnline->harga, 0, ',', '.');
                 })
                 ->rawColumns(['gambar', 'status'])
                 ->addIndexColumn()
@@ -192,10 +227,11 @@ class penjualan_Online_Controller extends Controller
 
     public function data_Alamat_Pengiriman($id)
     {
-        $data = Penjualan_Online::select('alamat_id')
-            ->where('id_penjualan_online', $id)
-            ->with(['alamat']);
-        return DataTables::of($data)->make(true);
+        $data = Penjualan_Online::select('alamats.provinsi', 'alamats.kabupaten', 'alamats.kecamatan', 'alamats.kelurahan', 'alamats.alamat_detail')
+            ->join('alamats', 'penjualan__onlines.alamat_id', '=', 'alamats.id_alamat') 
+            ->where('penjualan__onlines.id_penjualan_online', $id)
+            ->get();
+            return DataTables::of($data)->make(true);
     }
 
     public function data_Jasa_Pengiriman($id)
@@ -213,6 +249,8 @@ class penjualan_Online_Controller extends Controller
         $id_detail_penjualan_online = $id;
         $dataDetailPenjualanOnline = Detail_Penjualan_Online::without(['penjualan_online', 'produk'])->find($id_detail_penjualan_online);
         $dataDetailPenjualanOnline->update(['status' => 5]);
+        $penjualanOnline = Penjualan_Online::where('id_penjualan_online',  $dataDetailPenjualanOnline->penjualan_online_id)->first();
+        $penjualanOnline->update(['status'=>12]);
 
         $detailPromo = Detail_Promo::select('promos.tipe', 'promos.id_promo', 'promos.jumlah', 'promos.diskon')
             ->join('promos', 'promos.id_promo', '=', 'detail__promos.promo_id')
@@ -234,7 +272,7 @@ class penjualan_Online_Controller extends Controller
                     ->where('detail__penjualan__onlines.status', 1)
                     ->get();
 
-                $index = 0;
+            
                 if ($keranjang->count() % $detailPromo->jumlah == 0) {
                     foreach ($keranjang as $data) {
                         $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
@@ -246,10 +284,23 @@ class penjualan_Online_Controller extends Controller
                         ]);
                     }
                 } else {
-                    if ($keranjang->count() > 1) {
+                    if ($keranjang->count() > $detailPromo->jumlah) {
+                        $index = $keranjang->count();
                         foreach ($keranjang as $data) {
-                            $index++;
-                            if ($index == $keranjang->count()) {
+                           
+                            if ($index  % $detailPromo->jumlah == 0) {
+                                while($index!=0){
+                                    $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
+                                        'penjualan_online_id' => $dataDetailPenjualanOnline->penjualan_online_id,
+                                        'produk_id' => $data->id_produk,
+                                    ])->first();
+                                    $updateDetailPenjualanOnline->update([
+                                        'diskon' => $detailPromo->diskon,
+                                    ]);
+                                    $index--;
+                                }
+                               
+                            }else{
                                 $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
                                     'penjualan_online_id' => $dataDetailPenjualanOnline->penjualan_online_id,
                                     'produk_id' => $data->id_produk,
@@ -257,17 +308,11 @@ class penjualan_Online_Controller extends Controller
                                 $updateDetailPenjualanOnline->update([
                                     'diskon' => 0,
                                 ]);
-                                break;
+                                $index--;
                             }
-                            $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
-                                'penjualan_online_id' => $dataDetailPenjualanOnline->penjualan_online_id,
-                                'produk_id' => $data->id_produk,
-                            ])->first();
-                            $updateDetailPenjualanOnline->update([
-                                'diskon' => $detailPromo->diskon,
-                            ]);
+                           
                         }
-                    } elseif ($keranjang->count() == 1) {
+                    } else {
                         foreach ($keranjang as $data) {
                             $updateDetailPenjualanOnline = Detail_Penjualan_Online::where([
                                 'penjualan_online_id' => $dataDetailPenjualanOnline->penjualan_online_id,
@@ -333,7 +378,7 @@ class penjualan_Online_Controller extends Controller
         }
         $dataPenjualanOnline = Penjualan_Online::find($dataDetailPenjualanOnline->penjualan_online_id);
         $dataPenjualanOnline->update($dataEditTotal);
-        return redirect()->route('viewDetailPenjualanOnline', $dataDetailPenjualanOnline->penjualan_online_id);
+        return redirect()->route('viewDetailPenjualanOnline', $dataDetailPenjualanOnline->penjualan_online_id)->with('aksi', 'Membatalkan');
     }
 
     public function proses_Membatalkan_Penjualan_Online($id)
@@ -345,9 +390,25 @@ class penjualan_Online_Controller extends Controller
             $produk = Detail_Penjualan_Online::where('id_detail_penjualan_online', $row->id_detail_penjualan_online)->first();
             $produk->update(['status' => 5]);
         }
-        return redirect()->route('viewPenjualanOnline');
+        return redirect()->route('viewPenjualanOnline')->with('aksi', 'Membatalkan');
     }
-    //halaman pembeli
+
+    public function paket_Dikirim($id){
+        $penjualanOnline = Penjualan_Online::where('id_penjualan_online',$id)->first();
+        $penjualanOnline->update(['status'=>7]);
+        return redirect()->back()->with('aksi', 'Paket Dikirim');
+    }
+ //halaman pembeli
+    public function acc_Paket($id){
+        $penjualanOnline = Penjualan_Online::where('id_penjualan_online',$id)->first();
+        $penjualanOnline->update(['status'=>1]);
+        return redirect()->back()->with([
+            'aksi' => 'Mengkonfirmasi',
+            'halaman' => 'Transaksi',
+        ]);
+        
+    }
+   
     public function view_Penjualan_Online_Pembeli()
     {
         $judul = 'Transaksi';
@@ -365,10 +426,11 @@ class penjualan_Online_Controller extends Controller
             ->without(['user'])
             ->where('user_id', auth()->user()->id_user)
             ->get();
-        $ongkir = Ongkir::select('total_ongkir')
+           
+        $ongkir = Ongkir::select('total_ongkir', 'penjualan_online_id')
             ->where('penjualan_online_id', $penjualanOnline->id_penjualan_online)
             ->first();
-
+            
         $diskon = detail_penjualan_online::select('diskon')
             ->groupBy('diskon')
             ->where([
@@ -387,6 +449,14 @@ class penjualan_Online_Controller extends Controller
             // Set 3DS transaction for credit card to true
             \Midtrans\Config::$is3ds = true;
 
+            $currentTime=time();
+
+            $expireTime = $currentTime+(4*60*60);
+
+            $expireDateTime = date('Y-m-d H:i:s', $expireTime);
+
+
+
             $params = [
                 'transaction_details' => [
                     'order_id' => $penjualanOnline->id_penjualan_online,
@@ -398,6 +468,11 @@ class penjualan_Online_Controller extends Controller
                     'email' => $penjualanOnline->email,
                     'phone' => $penjualanOnline->nomor,
                 ],
+                'expiry' => [
+                    'unit' => 'minute',
+                    'duration' => 240, // 4 jam dalam menit
+                ],
+
             ];
 
             $snapToken = \Midtrans\Snap::getSnapToken($params);
@@ -478,6 +553,7 @@ class penjualan_Online_Controller extends Controller
             'kota_id' => $kota_id,
             'penjualan_online_id' => $penjualanOnline->id_penjualan_online,
         ];
+
         if ($cekDataOngkir) {
             $cekDataOngkir->update($dataStoreOngkir);
         } else {
@@ -504,13 +580,13 @@ class penjualan_Online_Controller extends Controller
             if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
                 $penjualanOnline = Penjualan_Online::find($request->order_id);
                 $penjualanOnline->update([
-                    'status' => 1,
+                    'status' => 6,
                     'tgl' => $tgl,
                 ]);
                 $detailPenjualanOnline = Detail_Penjualan_Online::where('penjualan_online_id', $request->order_id)->get();
                 foreach ($detailPenjualanOnline as $row) {
                     $produk = Produk::where('id_produk', $row->produk_id)->first();
-                    $produk->update(['stok' => 'tidak ada']);
+                    $produk->update(['stok' => 0]);
                 }
             } elseif ($request->transaction_status == 'pending') {
                 $penjualanOnline = Penjualan_Online::find($request->order_id);
@@ -524,6 +600,7 @@ class penjualan_Online_Controller extends Controller
                     'status' => 4,
                     'tgl' => $tgl,
                 ]);
+
             } elseif ($request->transaction_status == 'cancel') {
                 $penjualanOnline = Penjualan_Online::find($request->order_id);
                 $penjualanOnline->update([
@@ -567,8 +644,9 @@ class penjualan_Online_Controller extends Controller
             ->where('penjualan_online_id', $penjualanOnline->id_penjualan_online)
             ->first();
 
-        $detailPenjualanOnline = detail_penjualan_online::select('detail__penjualan__onlines.diskon', 'detail__penjualan__onlines.status', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk')
+        $detailPenjualanOnline = detail_penjualan_online::select('detail__penjualan__onlines.diskon', 'detail__penjualan__onlines.status', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'merks.nama_merk')
             ->join('produks', 'detail__penjualan__onlines.produk_id', '=', 'produks.id_produk')
+            ->join('merks', 'produks.merk_id', '=', 'merks.id_merk')
             ->where([
                 'detail__penjualan__onlines.penjualan_online_id' => $penjualanOnline->id_penjualan_online,
             ])

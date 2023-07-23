@@ -18,6 +18,7 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Kode Penjualan Offline</th>
                                                 <th>Tanggal</th>
                                                 <th>Total</th>
                                                 <th>Diterima</th>
@@ -49,6 +50,9 @@
                 columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex'
+                }, {
+                    data: 'id_penjualan_offline',
+                    name: 'id_penjualan_offline'
                 }, {
                     data: 'tgl',
                     name: 'tgl'

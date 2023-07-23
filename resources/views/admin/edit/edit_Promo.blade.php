@@ -2,7 +2,7 @@
 @section('konten')
     <div class="row mb-2">
         <div class="col-6 col-md-6 col-lg-6">
-            <h3 class="text-dark">Form Edit Kategori Produk</h3>
+            <h3 class="text-dark">Edit Promo</h3>
         </div>
     </div>
     <div class="card" style="background-color: #FCFCFE;">
@@ -46,9 +46,28 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Diskon</label>
-                                <input type="number" class="form-control @error('diskon') is-invalid @enderror"
-                                    value="{{ old('diskon', $promo->diskon) }}" id="diskon" name="diskon">
+                            <div class="input-group mb-3">
+                                 <input type="number" class="form-control @error('diskon') is-invalid @enderror"  value="{{ old('diskon', $promo->diskon) }}" id="diskon" name="diskon">
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="basic-addon2">%</span>
+                            </div>
+                            </div>
                                 @error('diskon')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Jumlah</label>
+                                @if($promo->tipe == 'potongan harga')
+                                <input type="number" class="form-control @error('jumlah') is-invalid @enderror"
+                                    value="{{ old('jumlah', $promo->jumlah) }}" id="jumlah" name="jumlah" readonly>
+                                @else
+                                <input type="number" class="form-control @error('jumlah') is-invalid @enderror"
+                                    value="{{ old('jumlah', $promo->jumlah) }}" id="jumlah" name="jumlah">
+                                @endif
+                                
+                                @error('jumlah')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -56,7 +75,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Tanggal Mulai</label>
                                 <input type="date" class="form-control @error('tgl_mulai') is-invalid @enderror"
-                                    value="{{ old('tgl_mulai', $promo->tgl_mulai) }}" id="tgl_mulai" name="tgl_mulai">
+                                    value="{{ old('tgl_mulai', $promo->tgl_mulai->format('Y-m-d')) }}" id="tgl_mulai" name="tgl_mulai">
                                 @error('tgl_mulai')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -65,7 +84,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Tanggal Berakhir</label>
                                 <input type="date" class="form-control @error('tgl_berakhir') is-invalid @enderror"
-                                    value="{{ old('tgl_berakhir', $promo->tgl_berakhir) }}" id="tgl_berakhir"
+                                    value="{{ old('tgl_berakhir', $promo->tgl_berakhir->format('Y-m-d')) }}" id="tgl_berakhir"
                                     name="tgl_berakhir">
                                 @error('tgl_berakhir')
                                     <div class="text-danger">{{ $message }}</div>
@@ -77,7 +96,7 @@
                                 <select class="form-control @error('status') is-invalid @enderror" name="status"
                                     id="exampleFormControlSelect1" value="{{ old('status', $promo->status) }}">
                                     <option selected value="">Pilih Status</option>
-                                    @if (old('status', $promo->status) == 1)
+                                    @if(old('status', $promo->status) == 1)
                                         <option value="{{ old('status', $promo->status) }}" selected>Aktif</option>
                                         <option value="2">Tidak Aktif</option>
                                     @elseif(old('status', $promo->status) == 2)

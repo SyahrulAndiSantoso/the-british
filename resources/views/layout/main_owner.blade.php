@@ -28,14 +28,18 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style2.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/components.css') }}">
     {{-- shortcut icon --}}
-    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/circle-logo.png') }}">
+    <!-- <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/circle-logo.png') }}"> -->
     {{-- ckeditor --}}
     <script src="//cdn.ckeditor.com/4.18.0/full/ckeditor.js"></script>
     {{-- Notif Toast Css --}}
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
     {{-- chart js --}}
     <script src="{{ asset('assets/js/chart/Chart.min.js') }}"></script>
-
+    <style>
+        .coret{
+            text-decoration: line-through;
+        }
+    </style>
 </head>
 
 <body style="background-color: #F8D3D2;">
@@ -82,15 +86,13 @@
                         </li>
 
                         <li
-                            class="dropdown {{ $judul == 'Penjualan Online' || $judul == 'Penjualan Offline' || $judul == 'Pembelian Ball' ? 'active' : '' }}">
+                            class="dropdown {{ $judul == 'Pembelian Ball' || $judul == 'Pengembalian Dana' ? 'active' : '' }}">
                             <a href="#" class="nav-link has-dropdown"><i class="bi bi-cart-fill" style="font-size: 23px;"></i><span>Transaksi</span></a>
                             <ul class="dropdown-menu">
                                 <li class="{{ $judul == 'Pembelian Ball' ? 'active' : '' }}"><a class="nav-link"
                                         href="{{ route('viewPembelianBallOwner') }}">Pembelian Ball</a></li>
-                                <li class="{{ $judul == 'Penjualan Online' ? 'active' : '' }}"><a class="nav-link"
-                                        href="/owner/penjualan-online">Penjualan Online</a></li>
-                                <li class="{{ $judul == 'Penjualan Offline' ? 'active' : '' }}"><a class="nav-link"
-                                        href="/owner/penjualan-offline">Penjualan Offline</a></li>
+                                <li class="{{ $judul == 'Pengembalian Dana' ? 'active' : '' }}"><a class="nav-link"
+                                        href="{{ route('viewPengembalianDanaOwner') }}">Pengembalian Dana</a></li>
                             </ul>
                         </li>
 

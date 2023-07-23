@@ -18,6 +18,7 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Kode Penjualan Online</th>
                                                 <th>Nama Pembeli</th>
                                                 <th>Tanggal</th>
                                                 <th>Total</th>
@@ -55,6 +56,9 @@
                 columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex'
+                }, {
+                    data: 'id_penjualan_online',
+                    name: 'id_penjualan_online'
                 }, {
                     data: 'user.nama_user',
                     name: 'user.nama_user'

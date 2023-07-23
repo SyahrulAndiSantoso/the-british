@@ -9,6 +9,7 @@ class Pembelian_Ball extends Model
 {
     use HasFactory;
     protected $table = 'pembelian__balls';
+    protected $dates = ['tgl_beli'];
     protected $primaryKey = 'id_pembelian_ball';
     protected $fillable = [
         'nama_ball',

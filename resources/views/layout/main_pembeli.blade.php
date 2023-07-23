@@ -226,72 +226,11 @@
         })
     </script>
 
-    <script>
-        $(function() {
-            $('#provinsi').on('change', function() {
-                let id_provinsi = $('#provinsi').val();
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('dataKabupaten') }}',
-                    data: {
-                        idProvinsi: id_provinsi
-                    },
-                    cache: false,
-
-                    success: function(msg) {
-                        $('#kabupaten').html(msg);
-                        $('#kecamatan').html('');
-                        $('#kelurahan').html('');
-                    },
-                    error: function(data) {
-                        console.log('Error: ', data);
-                    }
-                })
-            })
-
-            $('#kabupaten').on('change', function() {
-                let id_kabupaten = $('#kabupaten').val();
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('dataKecamatan') }}',
-                    data: {
-                        idKabupaten: id_kabupaten
-                    },
-                    cache: false,
-
-                    success: function(msg) {
-                        $('#kecamatan').html(msg);
-                        $('#kelurahan').html('');
-                    },
-                    error: function(data) {
-                        console.log('Error: ', data);
-                    }
-                })
-            })
-
-
-
-
-            $('#kecamatan').on('change', function() {
-                let id_kecamatan = $('#kecamatan').val();
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('dataKelurahan') }}',
-                    data: {
-                        idKecamatan: id_kecamatan
-                    },
-                    cache: false,
-
-                    success: function(msg) {
-                        $('#kelurahan').html(msg);
-                    },
-                    error: function(data) {
-                        console.log('Error: ', data);
-                    }
-                })
-            })
-        })
-    </script>
+    @yield('jsHapusKeranjang')
+    
+    @yield('jsTambahKeranjang')
+    
+    @yield('jsDataDaerahIndonesia')
 
     @yield('jsMidtrans')
 

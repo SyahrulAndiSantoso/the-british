@@ -29,7 +29,7 @@ class LoginController extends Controller
 
     public function view_Login_Owner()
     {
-        $judul = 'Masuk Admin';
+        $judul = 'Masuk Owner';
         return view('owner.login_owner', compact('judul'));
     }
 

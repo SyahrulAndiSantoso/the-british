@@ -17,13 +17,13 @@ class dashboard_Controller extends Controller
         if(auth()->user()->role == 'admin'){
             $penjualanOnline = Penjualan_Online::all()->count();
             $penjualanOffline = Penjualan_Offline::all()->count();
-            $produk = Produk::where('stok','ada')->count();
+            $produk = Produk::where('stok',1)->count();
             $promo = Promo::where('status',1)->count();
             return view('admin.dashboard', compact('judul','penjualanOnline','penjualanOffline','produk','promo'));
         }else if(auth()->user()->role == 'owner'){
             $penjualanOnline = Penjualan_Online::all()->count();
             $penjualanOffline = Penjualan_Offline::all()->count();
-            $produk = Produk::where('stok','ada')->count();
+            $produk = Produk::where('stok',1)->count();
             return view('owner.dashboard', compact('judul','penjualanOnline','penjualanOffline','produk'));
             
         }else if(auth()->user()->role == 'kasir'){

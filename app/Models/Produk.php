@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\DB;
 class Produk extends Model
 {
     use HasFactory;
+    public $incrementing = false;
     protected $table = 'produks';
     protected $primaryKey = 'id_produk';
-    protected $fillable = ['kategori_produk_id', 'nama_produk', 'thumbnail', 'stok', 'ukuran', 'gambar', 'harga', 'merk', 'deskripsi'];
+    protected $keyType = 'string';
+    protected $fillable = ['id_produk','kategori_produk_id', 'nama_produk', 'thumbnail', 'stok', 'ukuran_id', 'gambar', 'harga', 'merk_id', 'deskripsi'];
 
     public function detail_penjualan_online()
     {
@@ -28,6 +30,14 @@ class Produk extends Model
         return $this->belongsTo(Kategori_Produk::class, 'kategori_produk_id', 'id_kategori_produk');
     }
 
+
+    public function merk(){
+        return $this->belongsTo(Merk::class, 'merk_id', 'id_merk');
+    }
+
+    public function ukuran(){
+        return $this->belongsTo(Ukuran::class, 'ukuran_id', 'id_ukuran');
+    }
     public function detail_promo()
     {
         return $this->hasMany(Detail_Promo::class, 'detail_promo_id', 'id_detail_promo');

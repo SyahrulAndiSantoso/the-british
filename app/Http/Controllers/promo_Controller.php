@@ -48,6 +48,16 @@ class promo_Controller extends Controller
             ->editColumn('diskon', function ($promo) {
                 return $promo->diskon . '%';
             })
+            ->editColumn('tgl_mulai', function($promo){
+                $tgl = $promo->tgl_mulai;
+                return $tgl->format('d M Y');
+
+            })
+            ->editColumn('tgl_berakhir', function($promo){
+                $tgl = $promo->tgl_berakhir;
+                return $tgl->format('d M Y');
+
+            })
             ->editColumn('status', function ($promo) {
                 if ($promo->status == 1) {
                     return '<span class="text-white badge bg-success">Aktif</span>';
@@ -105,7 +115,7 @@ class promo_Controller extends Controller
     public function proses_Edit_Promo(Request $request)
     {
         $validatedData = $request->validate([
-            'nama_promo' => 'required',
+            'nama_promo' => 'required|min:3',
             'diskon' => 'required',
             'tipe' => 'required',
             'jumlah' => 'required',
@@ -131,18 +141,20 @@ class promo_Controller extends Controller
     public function view_Detail_Promo(Promo $promo)
     {
         $judul = 'Detail Promo';
-        $produk = Produk::latest();
+        $produk = null;
         if (request('search')) {
-            $produk = Produk::where('id_produk', 'like', '%' . request('search') . '%')->get();
+            $produk = Produk::where('id_produk', request('search'))->get();
         }
         return view('admin.detail_promo', compact('judul', 'produk', 'promo'));
     }
 
     public function data_Detail_Promo($id)
     {
-        $data = Detail_Promo::select('detail__promos.*', 'produks.*', 'promos.*')
+        $data = Detail_Promo::select('detail__promos.*', 'produks.*','merks.nama_merk','ukurans.ukuran', 'promos.*')
             ->join('promos', 'promos.id_promo', '=', 'detail__promos.promo_id')
             ->join('produks', 'produks.id_produk', '=', 'detail__promos.produk_id')
+            ->join('merks', 'produks.merk_id', '=', 'merks.id_merk')
+            ->join('ukurans', 'produks.ukuran_id', '=', 'ukurans.id_ukuran')
             ->where('detail__promos.promo_id', $id)
             ->get();
         return DataTables::of($data)
@@ -218,7 +230,9 @@ class promo_Controller extends Controller
     {
         $detailPromo = Detail_Promo::where('promo_id', $promo->id_promo);
         if ($detailPromo->count()) {
-            return redirect()->route('viewPromo');
+            return redirect()->route('viewPromo')->with([
+                'aksi' => 'Menambahkan',
+            ]);
         } else {
             return redirect()
                 ->route('viewDetailPromo', $promo->id_promo)

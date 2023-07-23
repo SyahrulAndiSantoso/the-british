@@ -15,8 +15,8 @@ class CreateDetailPenjualanOnlinesTable extends Migration
     {
         Schema::create('detail__penjualan__onlines', function (Blueprint $table) {
             $table->bigIncrements('id_detail_penjualan_online');
-            $table->unsignedBigInteger('penjualan_online_id');
-            $table->unsignedBigInteger('produk_id');
+            $table->string('penjualan_online_id');
+            $table->string('produk_id');
             $table->integer('diskon');
             $table->integer('status');
             $table->timestamps();

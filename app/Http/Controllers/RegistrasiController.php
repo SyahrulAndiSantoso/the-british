@@ -15,11 +15,11 @@ class RegistrasiController extends Controller
 
     public function proses_Store(Request $request){
         $validatedData = $request->validate([
-            "nama_user" => "required",
-            "email" => "required|email:dns|unique:users",
-            "username" => "required|unique:users",
-            "password" => "required",
-            "nomor" => "required",
+            "nama_user" => "required|min:3",
+            "email" => "required|email:dns|unique:users|min:6",
+            "username" => "required|unique:users|min:3",
+            "password" => "required|min:5",
+            "nomor" => "required|min:11",
             "tgl_lahir" => "required"
         ]);
         $validatedData['password'] = bcrypt($request->password);

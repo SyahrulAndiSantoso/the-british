@@ -18,8 +18,14 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nomor</label>
-                            <input type="number" name="nomor" class="form-control @error('nomor') is-invalid @enderror"
-                                id="exampleInputEmail1" value="{{ old('nomor', auth()->user()->nomor) }}" />
+                            <div class="input-group mb-3">
+                                <span class="input-group-text text-white"
+                                    style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; background-color: #8C8888;"
+                                    id="basic-addon1">+62</span>
+                                <input type="number" name="nomor"
+                                    class="form-control @error('nomor') is-invalid @enderror"
+                                    value="{{ old('nomor', auth()->user()->nomor) }}" required>
+                            </div>
                             @error('nomor')
                                 <div class="text-danger form-text">{{ $message }}</div>
                             @enderror
@@ -28,7 +34,7 @@
                             <label class="form-label">Tgl Lahir</label>
                             <input type="date" name="tgl_lahir"
                                 class="form-control @error('tgl_lahir') is-invalid @enderror" id="exampleInputEmail1"
-                                value="{{ old('tgl_lahir', auth()->user()->tgl_lahir) }}" />
+                                value="{{ old('tgl_lahir', auth()->user()->tgl_lahir->format('Y-m-d')) }}" />
                             @error('tgl_lahir')
                                 <div class="text-danger form-text">{{ $message }}</div>
                             @enderror

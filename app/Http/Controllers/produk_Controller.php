@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Detail_Produk;
 use App\Models\Detail_Promo;
 use App\Models\Kategori_Produk;
+use App\Models\Merk;
+use App\Models\Ukuran;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
@@ -13,6 +15,8 @@ use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
+use Milon\Barcode\DNS1D;
+use Milon\Barcode\DNS2D;
 
 class produk_Controller extends Controller
 {
@@ -26,84 +30,72 @@ class produk_Controller extends Controller
     {
         $judul = 'Produk';
         $kategori = Kategori_Produk::all();
+        $merk = Merk::all();
+        $ukuran = Ukuran::all();
+        $produk = Produk::select(['produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.stok', 'ukurans.ukuran', 'produks.harga', 'merks.nama_merk', 'produks.deskripsi','kategori__produks.nama_kategori_produk'])
+        ->join('ukurans', 'produks.ukuran_id', '=', 'ukurans.id_ukuran')
+        ->join('merks', 'produks.merk_id', '=', 'merks.id_merk')
+        ->join('kategori__produks', 'produks.kategori_produk_id', '=', 'kategori__produks.id_kategori_produk')
+        ->latest('produks.id_produk')
+        ->get();
 
-        return view('admin.produk', compact('judul', 'kategori'));
-    }
-
-    public function data_produk()
-    {
-        $data = Produk::select(['id_produk', 'kategori_produk_id', 'nama_produk', 'thumbnail', 'stok', 'ukuran', 'harga', 'merk', 'deskripsi'])
-            ->with(['kategori_produk'])
-            ->latest()
-            ->get();
-        return DataTables::of($data)
-            ->editColumn('thumbnail', function ($produk) {
-                $url = asset('storage/' . "$produk->thumbnail");
-                return '<img src="' . $url . '" width="100" />';
-            })
-            ->addColumn('aksi', function ($produk) {
-                return '<a href="' .
-                    route('viewEditProduk', $produk->id_produk) .
-                    '" class="' .
-                    'btn btn-warning"' .
-                    '><i
-            class="bi bi-pencil-square"></i>Edit</a> <a href="' .
-                    route('hapusProduk', $produk->id_produk) .
-                    '" class="' .
-                    'btn btn-danger"' .
-                    '><i
-            class="bi bi-trash3-fill"></i>Hapus</a> <a href="' .
-                    route('viewDetailProduk', $produk->id_produk) .
-                    '" class="btn btn-primary"><i
-            class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
-            })
-            ->editColumn('harga', function ($produk) {
-                return 'Rp ' . number_format($produk->harga, 0, ',', '.');
-            })
-            ->rawColumns(['aksi', 'thumbnail'])
-            ->addIndexColumn()
-            ->make(true);
+        return view('admin.produk', compact('judul', 'kategori','produk','merk','ukuran'));
     }
 
     public function view_Edit(Produk $produk)
     {
         $judul = 'Produk';
         $kategori = Kategori_Produk::all();
+        $merk = Merk::all();
+        $ukuran = Ukuran::all();
         $data = Produk::find($produk->id_produk);
-        return view('admin.edit.edit_Produk', compact('judul', 'data', 'kategori'));
+        return view('admin.edit.edit_Produk', compact('judul', 'data', 'kategori','ukuran','merk'));
     }
 
     public function proses_Edit(Request $request)
     {
         $data = Produk::find($request->id_produk);
-        $validatedData = $request->validate([
+        $rules = [
             'kategori_produk_id' => 'required',
             'nama_produk' => 'required|min:4',
             'stok' => 'required',
-            'ukuran' => 'required',
+            'ukuran_id' => 'required',
             'harga' => 'required',
-            'merk' => 'required',
+            'merk_id' => 'required',
             'deskripsi' => 'required',
-            'thumbnail' => 'required|image',
-        ]);
-        Storage::delete($request->thumbnailLama);
+        ];
+        if($request->thumbnail){
+            $rules['thumbnail'] ='required|image';
 
-        $gambar = $request->file('thumbnail');
-        $cekDirektory = Storage::disk('public')->exists('gambar-produk');
-        if (!$cekDirektory) {
-            Storage::makeDirectory('public/gambar-produk');
+            $validatedData = $request->validate($rules);
+
+            Storage::delete($request->thumbnailLama);
+
+            $gambar = $request->file('thumbnail');
+            $cekDirektory = Storage::disk('public')->exists('gambar-produk');
+            if (!$cekDirektory) {
+                Storage::makeDirectory('public/gambar-produk');
+            }
+            $namaGambar = 'gambar-produk/' . time() . $gambar->getClientOriginalName();
+            Image::make($request->file('thumbnail'))
+                ->resize(500, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                })
+                ->save('storage/' . $namaGambar);
+                
+                $harga = str_replace(',', '', $request->harga);
+                
+                $validatedData['harga'] =  $harga;
+                $validatedData['thumbnail'] = $namaGambar;
+                $validatedData['nama_produk'] = ucwords($request->nama_produk);
+        }else{
+            $validatedData = $request->validate($rules);
+            $harga = str_replace(',', '', $request->harga);
+            
+            $validatedData['harga'] =  $harga;
+            $validatedData['nama_produk'] = ucwords($request->nama_produk);
         }
-        $namaGambar = 'gambar-produk/' . time() . $gambar->getClientOriginalName();
-        Image::make($request->file('thumbnail'))
-            ->resize(500, null, function ($constraint) {
-                $constraint->aspectRatio();
-            })
-            ->save('storage/' . $namaGambar);
-        $validatedData['thumbnail'] = $namaGambar;
-        $validatedData['nama_produk'] = ucwords($request->nama_produk);
-        $validatedData['nama_produk'] = ucwords($request->nama_produk);
-        $validatedData['ukuran'] = strtoupper($request->ukuran);
-        $validatedData['merk'] = strtoupper($request->merk);
+    
         $data->update($validatedData);
         return redirect()
             ->route('viewProduk')
@@ -115,12 +107,13 @@ class produk_Controller extends Controller
         $validatedData = $request->validate([
             'kategori_produk_id' => 'required',
             'nama_produk' => 'required|min:4',
-            'ukuran' => 'required',
+            'ukuran_id' => 'required',
             'harga' => 'required',
-            'merk' => 'required',
+            'merk_id' => 'required',
             'deskripsi' => 'required',
-            'thumbnail' => 'required|image',
+            'thumbnail' => 'required|image|max:1024',
         ]);
+        $harga = str_replace(',', '', $request->harga);
         $gambar = $request->file('thumbnail');
         $cekDirektory = Storage::disk('public')->exists('gambar-produk');
         if (!$cekDirektory) {
@@ -133,11 +126,13 @@ class produk_Controller extends Controller
                 $constraint->aspectRatio();
             })
             ->save('storage/' . $namaGambar);
+            $idProduk = Produk::latest('id_produk')->first();
+            $idBaru = $idProduk ? sprintf('P%04d', substr($idProduk->id_produk, 1) + 1) : 'P0001';
+        $validatedData['id_produk'] = $idBaru;
         $validatedData['thumbnail'] = $namaGambar;
         $validatedData['nama_produk'] = ucwords($request->nama_produk);
-        $validatedData['ukuran'] = strtoupper($request->ukuran);
-        $validatedData['merk'] = strtoupper($request->merk);
-        $validatedData['stok'] = 'ada';
+        $validatedData['stok'] = 1;
+        $validatedData['harga'] = $harga;
         Produk::create($validatedData);
         $produk = $this->produkModel->getLastIdProduk()->first();
 
@@ -210,7 +205,7 @@ class produk_Controller extends Controller
     public function proses_Store_Detail_Produk(Request $request)
     {
         $validatedData = $request->validate([
-            'gambar' => 'required|image',
+            'gambar' => 'required|image|max:2024',
         ]);
         $gambar = $request->file('gambar');
         $namaGambar = 'gambar-produk/' . time() . $gambar->getClientOriginalName();
@@ -242,17 +237,20 @@ class produk_Controller extends Controller
                 'status' => 'baru',
             ]);
     }
+
     // Function untuk halaman pembeli
     public function view_Produk_Pembeli()
     {
-        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.stok', 'produks.thumbnail', 'produks.harga', 'produks.merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'merks.nama_merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
             ->leftjoin('kategori__produks', 'produks.kategori_produk_id', '=', 'kategori__produks.id_kategori_produk')
+            ->leftjoin('merks', 'produks.merk_id', '=', 'merks.id_merk')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
-            ->where([['produks.stok', '!=', 'tidak ada'], ['produks.nama_produk', 'like', '%' . request('search') . '%']])
-            ->orWhere('produks.merk', 'like', '%' . request('search') . '%')
+            ->where([['produks.stok', '!=', 0], ['produks.nama_produk', 'like', '%' . request('search') . '%']])
+            ->orWhere('merks.nama_merk', 'like', '%' . request('search') . '%')
             ->orWhere('kategori__produks.nama_kategori_produk', 'like', '%' . request('search') . '%')
             ->latest('produks.id_produk')
+            ->groupBy('produks.id_produk')
             ->get();
         if (!request('search') || $produk->count() == 0) {
             $produk = null;
@@ -271,8 +269,10 @@ class produk_Controller extends Controller
             ->where('produk_id', $id_produk)
             ->get();
 
-        $produk = Produk::select('produks.id_produk', 'produks.deskripsi as deskripsi_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk', 'kategori__produks.nama_kategori_produk', 'promos.nama_promo', 'promos.id_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi as deskripsi_promo')
+        $produk = Produk::select('produks.id_produk', 'produks.deskripsi as deskripsi_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'merks.nama_merk','ukurans.ukuran', 'kategori__produks.nama_kategori_produk', 'promos.nama_promo', 'promos.id_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi as deskripsi_promo')
             ->leftjoin('kategori__produks', 'produks.kategori_produk_id', '=', 'kategori__produks.id_kategori_produk')
+            ->leftjoin('merks', 'produks.merk_id', '=', 'merks.id_merk')
+            ->leftjoin('ukurans', 'produks.ukuran_id', '=', 'ukurans.id_ukuran')
             ->leftjoin('detail__produks', 'produks.id_produk', '=', 'detail__produks.produk_id')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
@@ -281,24 +281,27 @@ class produk_Controller extends Controller
             ])
             ->first();
 
-        $produkPromo = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk', 'promos.id_promo', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.deskripsi')
+        $produkPromo = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'merks.nama_merk', 'promos.id_promo', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.deskripsi')
+            ->leftjoin('merks', 'produks.merk_id', '=', 'merks.id_merk')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
             ->where([
-                'produks.stok' => 'ada',
+                'produks.stok' => 1,
                 'promos.status' => 1,
                 'promos.id_promo' => $produk->id_promo,
             ])
             ->limit(8)
             ->get();
 
-        $allProduk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.harga', 'produks.thumbnail', 'produks.merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+        $allProduk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.harga', 'produks.thumbnail', 'merks.nama_merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+            ->leftjoin('merks', 'produks.merk_id', '=', 'merks.id_merk')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
             ->where([
-                'produks.stok' => 'ada',
+                'produks.stok' => 1,
             ])
             ->limit(8)
+            ->groupBy('produks.id_produk')
             ->latest('produks.id_produk')
             ->get();
 
@@ -312,12 +315,14 @@ class produk_Controller extends Controller
     {
         $judul = 'Semua Produk';
         $kategori = Kategori_Produk::select('nama_kategori_produk')->get();
-        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.harga', 'produks.thumbnail', 'produks.merk', 'produks.stok', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.harga', 'produks.thumbnail', 'merks.nama_merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+            ->leftjoin('merks', 'produks.merk_id', '=', 'merks.id_merk')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
             ->where([
-                'produks.stok' => 'ada',
+                'produks.stok' => 1,
             ])
+            ->groupBy('produks.id_produk')
             ->get();
 
         return view('pembeli.produk', compact('produk', 'judul', 'kategori'));
@@ -328,12 +333,13 @@ class produk_Controller extends Controller
         $id_promo = decrypt($id);
         $judul = 'Semua Produk Promo';
         $kategori = Kategori_Produk::select('nama_kategori_produk')->get();
-        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk', 'produks.stok', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'merks.nama_merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
             ->leftjoin('kategori__produks', 'produks.kategori_produk_id', '=', 'kategori__produks.id_kategori_produk')
+            ->leftjoin('merks', 'produks.merk_id', '=', 'merks.id_merk')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
             ->where([
-                'produks.stok' => 'ada',
+                'produks.stok' => 1,
                 'promos.id_promo' => $id_promo,
             ])
             ->get();
@@ -345,14 +351,16 @@ class produk_Controller extends Controller
         $nama_kategori_produk = $id;
         $judul = 'Produk';
         $kategori = Kategori_Produk::select('nama_kategori_produk')->get();
-        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk', 'produks.stok', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
+        $produk = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'merks.nama_merk', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.status', 'promos.deskripsi')
             ->leftjoin('kategori__produks', 'produks.kategori_produk_id', '=', 'kategori__produks.id_kategori_produk')
+            ->leftjoin('merks', 'produks.merk_id', '=', 'merks.id_merk')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
             ->where([
-                'produks.stok' => 'ada',
+                'produks.stok' => 1,
                 'kategori__produks.nama_kategori_produk' => $nama_kategori_produk,
             ])
+            ->groupBy('produks.id_produk')
             ->latest('produks.id_produk')
             ->get();
 

@@ -28,6 +28,7 @@
                                                 <th>Merk</th>
                                                 <th>Ukuran</th>
                                                 <th>Harga</th>
+                                                <th>Qty</th>
                                                 <th>Diskon</th>
                                                 <th>Status</th>
                                             </tr>
@@ -78,14 +79,17 @@
                     data: 'gambar',
                     name: 'gambar'
                 }, {
-                    data: 'merk',
-                    name: 'merk'
+                    data: 'nama_merk',
+                    name: 'nama_merk'
                 }, {
                     data: 'ukuran',
                     name: 'ukuran'
                 }, {
                     data: 'harga',
                     name: 'harga'
+                }, {
+                    data: 'qty',
+                    name: 'qty'
                 }, {
                     data: 'diskon',
                     name: 'diskon'

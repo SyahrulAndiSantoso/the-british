@@ -68,42 +68,52 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Harga</label>
-                                <input type="number" class="form-control @error('harga') is-invalid @enderror"
-                                    id="harga" name="harga" value="{{ old('harga', $data->harga) }}">
+                                <input type="text" class="form-control @error('harga') is-invalid @enderror"
+                                    id="harga" name="harga" value="{{ old('harga',  number_format($data->harga, 0, ',', ',') ) }}">
                                 @error('harga')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Ukuran</label>
-                                <input type="text" class="form-control @error('ukuran') is-invalid @enderror"
-                                    id="ukuran" name="ukuran" value="{{ old('ukuran', $data->ukuran) }}">
-                                @error('ukuran')
+                                <select class="form-control" name="ukuran_id" id="ukuran_id">
+                                <option value="">Pilih Ukuran</option>
+                                @foreach ($ukuran as $row)
+                                        @if ($data->ukuran_id == $row->id_ukuran)
+                                            <option selected value="{{ $row->id_ukuran }}">
+                                                {{ $row->ukuran }}
+                                            </option>
+                                        @else
+                                            <option value="{{ $row->id_ukuran }}">{{ $row->ukuran }}</option>
+                                        @endif
+                                @endforeach
+                                </select>
+                                @error('ukuran_id')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Merk</label>
-                                <input type="text" class="form-control @error('merk') is-invalid @enderror"
-                                    id="merk" name="merk" value="{{ old('merk', $data->merk) }}">
-                                @error('merk')
+                                <select class="form-control" name="merk_id" id="merk_id">
+                                <option value="">Pilih Merk</option>
+                                @foreach ($merk as $row)
+                                       
+                                            <option value="{{ $row->id_merk }}" @if($data->merk_id == $row->id_merk) selected @endif>
+                                                {{ $row->nama_merk }}
+                                            </option>
+                                        
+                                            
+                                      
+                                @endforeach
+                                </select>
+                                @error('merk_id')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Stok</label>
-                                <select class="form-control" name="stok" id="exampleFormControlSelect1">
-                                    <option value="">Pilih Stok</option>
-                                    @if ($data->stok == 'ada')
-                                        <option selected value="{{ $data->stok }}">{{ $data->stok }}</option>
-                                        <option value="tidak ada">tidak ada
-                                        </option>
-                                    @else
-                                        <option selected value="{{ $data->stok }}">{{ $data->stok }}</option>
-                                        <option value="ada">ada
-                                        </option>
-                                    @endif
-                                </select>
+                                <input type="number" class="form-control @error('stok') is-invalid @enderror"
+                                    id="stok" name="stok" value="{{ old('stok', $data->stok) }}">
                                 @error('stok')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -124,4 +134,16 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('yajra-default')
+<script>
+      
+     const harga = document.querySelector('form #harga');
+        harga.addEventListener('keyup',function(){
+            let dataHarga = harga.value;
+            dataHarga = dataHarga.replace(/\D/g, '');
+            harga.value = new Intl.NumberFormat('en-US').format(dataHarga);
+        })
+</script>
 @endsection

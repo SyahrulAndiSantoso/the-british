@@ -2,9 +2,14 @@
 @section('konten')
     <br><br>
     @if (session()->has('aksi'))
-        <div class="flash-data" data-title="Berhasil" data-aksi="{{ session('aksi') }}" data-halaman="alamat">
+        <div class="flash-data" data-title="Berhasil" data-aksi="{{ session('aksi') }}" data-halaman="{{ session('halaman') }}">
         </div>
+    @elseif (session()->has('gagalhapus'))
+    <div class="flash-data" data-title="{{ session('gagalhapus') }}" data-aksi=".." data-halaman="alamat">
+    </div>
+    <p>{{ session('gagalhapus') }}</p>
     @endif
+
     @error('keterangan')
         <div class="flash-data" data-title="Gagal" data-aksi="Menambahkan" data-halaman="alamat">
         </div>
@@ -133,8 +138,8 @@
                     <p>{{ auth()->user()->nama_user }}</p>
                     <p class="px-lg-4 px-md-3">{{ auth()->user()->email }}</p>
                     <p>{{ auth()->user()->username }}</p>
-                    <p class="px-lg-4 px-md-3">{{ auth()->user()->nomor }}</p>
-                    <p>{{ auth()->user()->tgl_lahir }}</p>
+                    <p class="px-lg-4 px-md-3">62{{ auth()->user()->nomor }}</p>
+                    <p>{{ auth()->user()->tgl_lahir->format('d M Y')}}</p>
                 </div>
 
             </div>
@@ -204,21 +209,38 @@
                                                                 class="bi bi-x-circle"></i></b></p>
                                                     <p style="font-size: 1.2em;"><b>Transaksi Gagal</b></p>
                                                     <p class="text-secondary fw-lighter">Maaf, Silahkan Dicoba Lagi</p>
+                                                @elseif($rowPenjualanOnline->status == 3)
+                                                <p class="text-info" style="font-size: 3em;"><b><i class="bi bi-clock-history"></i></b></p>
+                                                    <p style="font-size: 1.2em;"><b>Transaksi Pending</b></p>
+                                                    <p class="text-secondary fw-lighter">Maaf, Silahkan Melakukan Pembayaran</p>
                                                 @elseif($rowPenjualanOnline->status == 5)
                                                     <p class="text-danger" style="font-size: 3em;"><b><i
                                                                 class="bi bi-x-circle"></i></b></p>
                                                     <p style="font-size: 1.2em;"><b>Transaksi Dibatalkan</b></p>
-                                                    <p class="text-secondary fw-lighter">Maaf, Silahkan Hubungi Kami</p>
-                                                @endif
-
+                                                    <p class="text-secondary fw-lighter">Kami Akan Menghubungi Anda</p>
+                                                    @elseif($rowPenjualanOnline->status == 6)
+                                                    <p class="text-success" style="font-size: 3em;"><b><i class="bi bi-cash-stack"></i></b></p>
+                                                    <p style="font-size: 1.2em;"><b>Pembayaran Dikonfirmasi</b></p>
+                                                    <p class="text-secondary fw-lighter">Produk Akan Kami Kemas</p>
+                                                    @elseif($rowPenjualanOnline->status == 7)
+                                                    <p class="text-dark" style="font-size: 3em;"><b><i class="bi bi-truck"></i></b></p>
+                                                    <p style="font-size: 1.2em;"><b>Paket Sedang Dikirim</b></p>
+                                                    <p class="text-secondary fw-lighter">Mohon Ditunggu Paket Anda</p>
+                                            @endif
                                             </center>
                                         </div>
                                     </div>
                                 </div>
                             </li>
+                            @if ($rowPenjualanOnline->status == 7)
+                            <li class="list-group-item d-flex justify-content-between">
+                                <p><b>Apakah Paket Sudah Diterima</b></p>
+                                <a id="acc" href="{{ route('accPaketPembeli',$rowPenjualanOnline->id_penjualan_online) }}" class="btn text-white btn-merah rounded-5 px-3" data-id="{{ $rowPenjualanOnline->id_penjualan_online }}">Sudah</a>
+                            </li>
+                            @endif
                             <li class="list-group-item">
                                 <p><b>Tanggal Transaksi</b></p>
-                                <p class="text-secondary fw-light">{{ $rowPenjualanOnline->tgl }}</p>
+                                <p class="text-secondary fw-light">{{ $rowPenjualanOnline->tgl->format('d M Y'); }}</p>
                             </li>
                             <li class="list-group-item">
                                 <p><b> Metode Pembayaran</b></p>
@@ -265,11 +287,15 @@
                                                 </div>
 
                                                 <div class="col-12 mb-lg-3 mb-sm-2 d-flex justify-content-between">
-                                                    <span class="mb-2">{{ $row->merk }}</span>
-                                                    @if ($row->status == 5)
-                                                        <span class="mb-2 text-danger">produk ini dibatalkan</span>
-                                                    @endif
+                                                    <span class="mb-2">{{ $row->nama_merk }}</span>
+                                    <span class="mb-2">Qty 1</span>
+                                                  
                                                 </div>
+                                                @if ($row->status == 5)
+                                                    <div class="mb-2 mb-lg-3 mb-sm-2 alert alert-danger" role="alert">
+                                                    produk ini dibatalkan
+                                                    </div>
+                                                    @endif
                                             </div>
                                         </div>
                                     @else
@@ -290,17 +316,24 @@
                                     <p>Diskon</p>
 
                                     <p class="fw-light text-primary">
-                                        @if ($diskon)
+                                        <?php $status=null; ?>
+                                        @if ($diskon->count()!=0)
+                                        <?php $status='tidak ada'; ?>
                                             @foreach ($diskon->skip($indexDiskon) as $row)
-                                                @if ($row->penjualan_online_id == $rowPenjualanOnline->id_penjualan_online)
+                                                @if ($row->id_penjualan_online == $rowPenjualanOnline->id_penjualan_online)
                                                     <?php $indexDiskon++; ?>
                                                     {{ $row->diskon . '% ' }}
+                                                    <?php $status='ada'; ?>
                                                 @else
                                                     <?php break; ?>
                                                 @endif
                                             @endforeach
                                         @else
-                                            0
+                                            Tidak Ada
+                                        @endif
+
+                                        @if($status == 'tidak ada')
+                                            Tidak Ada
                                         @endif
                                     </p>
                                 </div>
@@ -325,4 +358,78 @@
             @endforeach
         </div>
     </div>
+    <br>
+@endsection
+
+@section('jsDataDaerahIndonesia')
+
+<script>
+        $(function() {
+            $('#provinsi').on('change', function() {
+                let id_provinsi = $('#provinsi').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('dataKabupaten') }}',
+                    data: {
+                        idProvinsi: id_provinsi
+                    },
+                    cache: false,
+
+                    success: function(msg) {
+                        $('#kabupaten').html(msg);
+                        $('#kecamatan').html('');
+                        $('#kelurahan').html('');
+                    },
+                    error: function(data) {
+                        console.log('Error: ', data);
+                    }
+                })
+            })
+
+            
+
+            $('#kabupaten').on('change', function() {
+                let id_kabupaten = $('#kabupaten').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('dataKecamatan') }}',
+                    data: {
+                        idKabupaten: id_kabupaten
+                    },
+                    cache: false,
+
+                    success: function(msg) {
+                        $('#kecamatan').html(msg);
+                        $('#kelurahan').html('');
+                    },
+                    error: function(data) {
+                        console.log('Error: ', data);
+                    }
+                })
+            })
+
+
+
+
+            $('#kecamatan').on('change', function() {
+                let id_kecamatan = $('#kecamatan').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('dataKelurahan') }}',
+                    data: {
+                        idKecamatan: id_kecamatan
+                    },
+                    cache: false,
+
+                    success: function(msg) {
+                        $('#kelurahan').html(msg);
+                    },
+                    error: function(data) {
+                        console.log('Error: ', data);
+                    }
+                })
+            })
+        })
+    </script>
+
 @endsection

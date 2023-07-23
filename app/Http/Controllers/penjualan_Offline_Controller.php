@@ -34,17 +34,22 @@ class penjualan_Offline_Controller extends Controller
 
     public function data_Penjualan_Offline()
     {
-        $data = Penjualan_Offline::where('status', '!=', 2)->get();
+        $data = Penjualan_Offline::where('status', '!=', 2)->latest()->get();
 
         return DataTables::of($data)
             ->editColumn('status', function ($penjualanOffline) {
                 if ($penjualanOffline->status == '1') {
-                    return '<span class="text-white badge bg-success">Success</span>
+                    return '<span class="text-white badge bg-success">Berhasil</span>
                     ';
                 } elseif ($penjualanOffline->status == '5') {
-                    return '<span class="text-white badge bg-danger">Cancel</span>
+                    return '<span class="text-white badge bg-danger">Dibatalkan</span>
                     ';
                 }
+            })
+            ->editColumn('tgl', function($penjualanOffline){
+                $tgl = $penjualanOffline->tgl;
+                return $tgl->format('d M Y');
+
             })
             ->editColumn('total', function ($penjualanOffline) {
                 return 'Rp ' . number_format($penjualanOffline->total, 0, ',', '.');
@@ -57,32 +62,34 @@ class penjualan_Offline_Controller extends Controller
             })
             ->addColumn('aksi', function ($penjualanOffline) {
                 if (auth()->user()->role == 'admin') {
-                    return '<a href="' .
+                    if($penjualanOffline->status == 5){
+                        return '<a href="' .
                         route('viewDetailPenjualanOfflineAdmin', $penjualanOffline->id_penjualan_offline) .
                         '" class="btn btn-primary"><i
             class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
-                } elseif (auth()->user()->role == 'owner') {
-                    return '<a href="' .
-                        route('viewDetailPenjualanOfflineOwner', $penjualanOffline->id_penjualan_offline) .
-                        '" class="btn btn-primary"><i
-            class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
-                } elseif (auth()->user()->role == 'kasir') {
-                    if ($penjualanOffline->status == 5) {
-                        return '<a href="' .
-                            route('viewDetailPenjualanOffline', $penjualanOffline->id_penjualan_offline) .
-                            '" class="btn btn-primary"><i
-                class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
-                    } else {
+                    }else{
                         return '<a href="' .
                             route('membatalkanPenjualanOffline', $penjualanOffline->id_penjualan_offline) .
                             '" class="' .
                             'btn btn-danger"' .
                             '><i
                         class="bi bi-x"></i>Membatalkan</a> <a href="' .
-                            route('viewDetailPenjualanOffline', $penjualanOffline->id_penjualan_offline) .
+                            route('viewDetailPenjualanOfflineAdmin', $penjualanOffline->id_penjualan_offline) .
                             '" class="btn btn-primary"><i
                 class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
                     }
+                   
+                } elseif (auth()->user()->role == 'owner') {
+                    return '<a href="' .
+                        route('viewDetailPenjualanOfflineOwner', $penjualanOffline->id_penjualan_offline) .
+                        '" class="btn btn-primary"><i
+            class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
+                } elseif (auth()->user()->role == 'kasir') {
+
+                        return '<a href="' .
+                            route('viewDetailPenjualanOffline', $penjualanOffline->id_penjualan_offline) .
+                            '" class="btn btn-primary"><i
+                class="bi bi-eye-fill mr-2"></i>Lihat Detail</a>';
                 }
             })
             ->rawColumns(['status', 'aksi'])
@@ -93,25 +100,28 @@ class penjualan_Offline_Controller extends Controller
     public function view_Tambah_Penjualan_Offline()
     {
         $judul = 'Penjualan Offline';
-        $produk = Produk::latest();
+        $produk = null;
         $detailProduk = Detail_Produk::latest();
         $penjualanOffline = penjualan_Offline::select('total')
             ->where(['status'=> 2])
             ->first();
         if (request('search')) {
-            $produk = Produk::select('thumbnail', 'nama_produk', 'merk', 'stok', 'harga', 'id_produk')
-                ->without(['kategori_produk'])
-                ->where('id_produk', 'like', '%' . request('search') . '%')
-                ->get();
+            $produk = Produk::select('produks.thumbnail', 'produks.nama_produk', 'merks.nama_merk', 'produks.stok', 'produks.harga', 'produks.id_produk')
+            ->join('merks', 'produks.merk_id', '=', 'merks.id_merk')
+            ->without(['kategori_produk'])
+            ->where('id_produk', request('search'))
+            ->get();
         }
         return view('kasir.tambah.tambah_Penjualan_Offline', compact('judul', 'produk', 'penjualanOffline'));
     }
 
     public function data_Tambah_Penjualan_Offline()
     {
-        $data = Detail_Penjualan_Offline::select('id_detail_penjualan_offline', 'diskon', 'produks.*', 'penjualan__offlines.*')
+        $data = Detail_Penjualan_Offline::select('detail__penjualan__offlines.id_detail_penjualan_offline', 'detail__penjualan__offlines.diskon', 'produks.*', 'penjualan__offlines.*','merks.nama_merk','ukurans.ukuran')
             ->join('penjualan__offlines', 'penjualan__offlines.id_penjualan_offline', '=', 'detail__penjualan__offlines.penjualan_offline_id')
             ->join('produks', 'produks.id_produk', '=', 'detail__penjualan__offlines.produk_id')
+            ->join('merks', 'produks.merk_id', '=', 'merks.id_merk')
+            ->join('ukurans', 'produks.ukuran_id', '=', 'ukurans.id_ukuran')
             ->where('penjualan__offlines.status', 2)
             ->get();
         return DataTables::of($data)
@@ -201,7 +211,10 @@ class penjualan_Offline_Controller extends Controller
             }
         } else {
             $tgl = Carbon::now();
+            $idPenjualanOffline = Penjualan_Offline::latest('id_penjualan_offline')->first();
+            $idBaru =  $idPenjualanOffline ? sprintf('INV%06d', substr( $idPenjualanOffline->id_penjualan_offline, 3) + 1) : 'INV000001';
             $dataPenjualanOffline = [
+                'id_penjualan_offline'=>$idBaru,
                 'status' => 2,
                 'tgl' => $tgl,
             ];
@@ -244,7 +257,7 @@ class penjualan_Offline_Controller extends Controller
                 }
             }
         }
-        $produk->update(['stok' => 'tidak ada']);
+        $produk->update(['stok' => 0]);
         $total = $this->penjualanOfflineModel->getTotal();
         $penjualanOffline->update([
             'total' => intval($total->total_diskon) + intval($total->total_bukan_diskon),
@@ -270,7 +283,7 @@ class penjualan_Offline_Controller extends Controller
             ->first();
         $dataDetailPenjualanOffline->delete($id);
         $produk = Produk::find($dataDetailPenjualanOffline->produk_id);
-        $produk->update(['stok' => 'ada']);
+        $produk->update(['stok' => 1]);
         if ($detailPromo) {
             if ($detailPromo->tipe == 'minimal pembelian') {
                 $keranjang = Detail_Penjualan_Offline::select('detail__penjualan__offlines.id_detail_penjualan_offline', 'detail__penjualan__offlines.diskon', 'produks.id_produk')
@@ -282,7 +295,7 @@ class penjualan_Offline_Controller extends Controller
                     ->where('promos.id_promo', $detailPromo->id_promo)
                     ->get();
 
-                $index = 0;
+                
                 if ($keranjang->count() % $detailPromo->jumlah == 0) {
                     foreach ($keranjang as $data) {
                         $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
@@ -294,10 +307,21 @@ class penjualan_Offline_Controller extends Controller
                         ]);
                     }
                 } else {
-                    if ($keranjang->count() > 1) {
+                    if ($keranjang->count() > $detailPromo->jumlah) {
+                        $index = $keranjang->count();
                         foreach ($keranjang as $data) {
-                            $index++;
-                            if ($index == $keranjang->count()) {
+                            if ($index %  $detailPromo->jumlah==0) {
+                                while($index!=0){
+                                    $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
+                                        'penjualan_offline_id' => $dataDetailPenjualanOffline->penjualan_offline_id,
+                                        'produk_id' => $data->id_produk,
+                                    ])->first();
+                                    $updateDetailPenjualanOffline->update([
+                                        'diskon' => $detailPromo->diskon,
+                                    ]);
+                                    $index--;
+                                }
+                            }else{
                                 $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
                                     'penjualan_offline_id' => $dataDetailPenjualanOffline->penjualan_offline_id,
                                     'produk_id' => $data->id_produk,
@@ -305,17 +329,11 @@ class penjualan_Offline_Controller extends Controller
                                 $updateDetailPenjualanOffline->update([
                                     'diskon' => 0,
                                 ]);
-                                break;
+                                $index--;
                             }
-                            $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
-                                'penjualan_offline_id' => $dataDetailPenjualanOffline->penjualan_offline_id,
-                                'produk_id' => $data->id_produk,
-                            ])->first();
-                            $updateDetailPenjualanOffline->update([
-                                'diskon' => $detailPromo->diskon,
-                            ]);
+                          
                         }
-                    } elseif ($keranjang->count() == 1) {
+                    } else {
                         foreach ($keranjang as $data) {
                             $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
                                 'penjualan_offline_id' => $dataDetailPenjualanOffline->penjualan_offline_id,
@@ -354,12 +372,15 @@ class penjualan_Offline_Controller extends Controller
         $validatedData = $request->validate([
             'diterima' => 'required',
         ]);
+        $diterima = str_replace(',', '', $request->diterima);
+        $kembalian = str_replace(',', '', $request->kembalian);
         if ($request->diterima < $request->total) {
             return redirect()
                 ->route('viewTambahPenjualanOffline')
                 ->with('title', 'Gagal');
         } else {
-            $validatedData['kembalian'] = $request->kembalian;
+            $validatedData['kembalian'] = $kembalian;
+            $validatedData['diterima'] = $diterima;
             $validatedData['status'] = 1;
             $penjualanOffline = Penjualan_Offline::where('status', 2)->first();
             $penjualanOffline->update($validatedData);
@@ -387,13 +408,18 @@ class penjualan_Offline_Controller extends Controller
 
     public function data_Detail_Penjualan_Offline($id)
     {
-        $data = Detail_Penjualan_Offline::select('detail__penjualan__offlines.*', 'produks.*')
+        $data = Detail_Penjualan_Offline::select('detail__penjualan__offlines.id_detail_penjualan_offline','detail__penjualan__offlines.diskon','detail__penjualan__offlines.status', 'produks.nama_produk','produks.thumbnail','merks.nama_merk','ukurans.ukuran','produks.harga')
             ->join('produks', 'produks.id_produk', '=', 'detail__penjualan__offlines.produk_id')
+            ->join('merks', 'produks.merk_id', '=', 'merks.id_merk')
+            ->join('ukurans', 'produks.ukuran_id', '=', 'ukurans.id_ukuran')
             ->join('penjualan__offlines', 'penjualan__offlines.id_penjualan_offline', '=', 'detail__penjualan__offlines.penjualan_offline_id')
             ->where(['penjualan__offlines.id_penjualan_offline' => $id])
             ->get();
-        if (auth()->user()->role == 'kasir') {
+        if (auth()->user()->role == 'kasir'||auth()->user()->role == 'owner') {
             return DataTables::of($data)
+            ->addColumn('qty', function(){
+                return '1';
+            })
                 ->addColumn('gambar', function ($detailPenjualanOffline) {
                     $url = asset('storage/' . "$detailPenjualanOffline->thumbnail");
                     return '<img src="' . $url . '" width="100" />';
@@ -422,23 +448,14 @@ class penjualan_Offline_Controller extends Controller
                     ';
                     }
                 })
-                ->addColumn('aksi', function ($detailPenjualanOffline) {
-                    if ($detailPenjualanOffline->status == 1) {
-                        return '<a href="' .
-                            route('membatalkanDetailPenjualanOffline', $detailPenjualanOffline->id_detail_penjualan_offline) .
-                            '" class="' .
-                            'btn btn-danger"' .
-                            '><i
-            class="bi bi-x"></i>Membatalkan</a>';
-                    } else {
-                        return '';
-                    }
-                })
-                ->rawColumns(['gambar', 'harga', 'status', 'aksi'])
+                ->rawColumns(['gambar', 'harga', 'status'])
                 ->addIndexColumn()
                 ->make(true);
         } else {
             return DataTables::of($data)
+            ->addColumn('qty', function(){
+                return '1';
+            })
                 ->addColumn('gambar', function ($detailPenjualanOffline) {
                     $url = asset('storage/' . "$detailPenjualanOffline->thumbnail");
                     return '<img src="' . $url . '" width="100" />';
@@ -467,7 +484,19 @@ class penjualan_Offline_Controller extends Controller
                     ';
                     }
                 })
-                ->rawColumns(['gambar', 'harga', 'status'])
+                ->addColumn('aksi', function ($detailPenjualanOffline) {
+                    if ($detailPenjualanOffline->status == 1) {
+                        return '<a href="' .
+                        route('membatalkanDetailPenjualanOffline', $detailPenjualanOffline->id_detail_penjualan_offline) .
+                            '" class="' .
+                            'btn btn-danger"' .
+                            '><i
+            class="bi bi-x"></i>Membatalkan</a>';
+                    } else {
+                        return '';
+                    }
+                })
+                ->rawColumns(['gambar', 'harga', 'status','aksi'])
                 ->addIndexColumn()
                 ->make(true);
         }
@@ -509,10 +538,21 @@ class penjualan_Offline_Controller extends Controller
                         ]);
                     }
                 } else {
-                    if ($keranjang->count() > 1) {
+                    if ($keranjang->count() > $detailPromo->jumlah) {
+                        $index = $keranjang->count();
                         foreach ($keranjang as $data) {
-                            $index++;
-                            if ($index == $keranjang->count()) {
+                            if ($index %  $detailPromo->jumlah==0) {
+                                while($index!=0){
+                                    $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
+                                        'penjualan_offline_id' => $dataDetailPenjualanOffline->penjualan_offline_id,
+                                        'produk_id' => $data->id_produk,
+                                    ])->first();
+                                    $updateDetailPenjualanOffline->update([
+                                        'diskon' => $detailPromo->diskon,
+                                    ]);
+                                    $index--;
+                                }
+                            }else{
                                 $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
                                     'penjualan_offline_id' => $dataDetailPenjualanOffline->penjualan_offline_id,
                                     'produk_id' => $data->id_produk,
@@ -520,17 +560,11 @@ class penjualan_Offline_Controller extends Controller
                                 $updateDetailPenjualanOffline->update([
                                     'diskon' => 0,
                                 ]);
-                                break;
+                                $index--;
                             }
-                            $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
-                                'penjualan_offline_id' => $dataDetailPenjualanOffline->penjualan_offline_id,
-                                'produk_id' => $data->id_produk,
-                            ])->first();
-                            $updateDetailPenjualanOffline->update([
-                                'diskon' => $detailPromo->diskon,
-                            ]);
+                          
                         }
-                    } elseif ($keranjang->count() == 1) {
+                    } else {
                         foreach ($keranjang as $data) {
                             $updateDetailPenjualanOffline = Detail_Penjualan_Offline::where([
                                 'penjualan_offline_id' => $dataDetailPenjualanOffline->penjualan_offline_id,
@@ -554,7 +588,7 @@ class penjualan_Offline_Controller extends Controller
             ]);
         }
 
-        return redirect()->route('viewDetailPenjualanOffline', $dataDetailPenjualanOffline->penjualan_offline_id);
+        return redirect()->route('viewDetailPenjualanOfflineAdmin', $dataDetailPenjualanOffline->penjualan_offline_id)->with('aksi', 'Membatalkan');
     }
 
     public function proses_Membatalkan_Penjualan_Offline($id)
@@ -567,21 +601,8 @@ class penjualan_Offline_Controller extends Controller
             $produk->update(['status' => 5]);
         }
         return redirect()
-            ->route('viewPenjualanOfflineKasir')
-            ->with([
-                'aksi' => 'Checkout',
-                'halaman' => 'Penjualan Offline',
-            ]);
+            ->route('viewPenjualanOfflineAdmin')
+            ->with('aksi', 'Membatalkan');
     }
 
-    public function cetak_Kwitansi()
-    {
-        $options = [
-            'page-width' => '80mm',
-            'page-height' => '80mm',
-        ];
-        $pdf = SnappyPdf::loadView('kasir.kwitansi')->setOptions($options);
-
-        return $pdf->download('kwitansi.pdf');
-    }
 }

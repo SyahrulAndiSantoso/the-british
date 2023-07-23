@@ -10,6 +10,7 @@ class Promo extends Model
 {
     use HasFactory;
     protected $table = 'promos';
+    protected $dates = ['tgl_mulai','tgl_berakhir'];
     protected $primaryKey = 'id_promo';
     protected $fillable = [
         'nama_promo',

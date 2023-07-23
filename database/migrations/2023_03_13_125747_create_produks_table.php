@@ -14,8 +14,10 @@ class CreateProduksTable extends Migration
     public function up()
     {
         Schema::create('produks', function (Blueprint $table) {
-            $table->bigIncrements('id_produk');
+            $table->string('id_produk')->primary()->unique();
             $table->unsignedBigInteger('kategori_produk_id');
+            $table->unsignedBigInteger('ukuran_id');
+            $table->unsignedBigInteger('merk_id');
             $table->string('nama_produk');
             $table->string('thumbnail');
             $table->string('stok');
@@ -25,6 +27,8 @@ class CreateProduksTable extends Migration
             $table->text('deskripsi');
             $table->timestamps();
             $table->foreign('kategori_produk_id')->references('id_kategori_produk')->on('kategori__produks');
+            $table->foreign('ukuran_id')->references('id_ukuran')->on('ukurans');
+            $table->foreign('merk_id')->references('id_merk')->on('merks');
         });
     }
 

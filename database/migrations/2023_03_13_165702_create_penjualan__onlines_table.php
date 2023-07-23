@@ -14,7 +14,7 @@ class CreatePenjualanOnlinesTable extends Migration
     public function up()
     {
         Schema::create('penjualan__onlines', function (Blueprint $table) {
-            $table->bigIncrements('id_penjualan_online');
+            $table->string('id_penjualan_online')->primary()->unique();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('alamat_id')->nullable();
             $table->bigInteger('total')->nullable();

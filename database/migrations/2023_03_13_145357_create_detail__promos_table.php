@@ -16,7 +16,7 @@ class CreateDetailPromosTable extends Migration
         Schema::create('detail__promos', function (Blueprint $table) {
             $table->bigIncrements('id_detail_promo');
             $table->unsignedBigInteger('promo_id');
-            $table->unsignedBigInteger('produk_id');
+            $table->string('produk_id');
             $table->timestamps();
             $table->foreign('promo_id')->references('id_promo')->on('promos');
             $table->foreign('produk_id')->references('id_produk')->on('produks');

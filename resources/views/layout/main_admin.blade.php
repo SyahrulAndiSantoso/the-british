@@ -9,6 +9,13 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script>
     {{-- Fontawesome Libraries --}}
     <link href="{{ asset('assets/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     {{-- Icon Bootstrap 4 --}}
@@ -27,7 +34,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style2.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/components.css') }}">
     {{-- shortcut icon --}}
-    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/circle-logo.png') }}">
+    <!-- <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/logotbt.png') }}"> -->
     {{-- Notif Toast Css --}}
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
     {{-- chart js --}}
@@ -37,6 +44,16 @@
     {{-- Ckeditor 5 --}}
     <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/classic/ckeditor.js"></script>
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
+    <style>
+        .coret{
+            text-decoration: line-through;
+        }
+        button.trix-button--icon-attach{
+            display: none;
+        }
+    </style>
+    <!-- slecet2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 
 <body style="background-color: #F8D3D2;">
@@ -84,10 +101,14 @@
                         </li>
 
                         <li
-                            class="dropdown {{ $judul == 'Produk' || $judul == 'Kategori Produk' || $judul == 'Promo' ? 'active' : '' }}">
+                            class="dropdown {{ $judul == 'Produk' || $judul == 'Ukuran'  || $judul == 'Merk' || $judul == 'Kategori Produk' || $judul == 'Promo' ? 'active' : '' }}">
                             <a href="#" class="nav-link has-dropdown"><i class="bi bi-bag-fill"
                                     style="font-size: 23px;"></i><span>Master</span></a>
                             <ul class="dropdown-menu">
+                                <li class="{{ $judul == 'Ukuran' ? 'active' : '' }}"><a class="nav-link"
+                                        href="{{ route('viewUkuran') }}">Ukuran</a></li>
+                                <li class="{{ $judul == 'Merk' ? 'active' : '' }}"><a class="nav-link"
+                                        href="{{ route('viewMerk') }}">Merk</a></li>
                                 <li class="{{ $judul == 'Produk' ? 'active' : '' }}"><a class="nav-link"
                                         href="{{ route('viewProduk') }}">Produk</a></li>
                                 <li class="{{ $judul == 'Kategori Produk' ? 'active' : '' }}"><a class="nav-link"
@@ -98,12 +119,14 @@
                         </li>
 
                         <li
-                            class="dropdown {{ $judul == 'Penjualan Online' || $judul == 'Penjualan Offline' || $judul == 'Pembelian Ball' ? 'active' : '' }}">
+                            class="dropdown {{ $judul == 'Penjualan Online' || $judul == 'Pengembalian Dana' || $judul == 'Penjualan Offline' || $judul == 'Pembelian Ball' ? 'active' : '' }}">
                             <a href="#" class="nav-link has-dropdown"><i class="bi bi-cart-fill"
                                     style="font-size: 23px;"></i><span>Transaksi</span></a>
                             <ul class="dropdown-menu">
                                 <li class="{{ $judul == 'Pembelian Ball' ? 'active' : '' }}"><a class="nav-link"
                                         href="{{ route('viewPembelianBallAdmin') }}">Pembelian Ball</a></li>
+                                <li class="{{ $judul == 'Pengembalian Dana' ? 'active' : '' }}"><a class="nav-link"
+                                        href="{{ route('viewPengembalianDanaAdmin') }}">Pengembalian Dana</a></li>
                                 <li class="{{ $judul == 'Penjualan Online' ? 'active' : '' }}"><a class="nav-link"
                                         href="/admin/penjualan-online">Penjualan Online</a></li>
                                 <li class="{{ $judul == 'Penjualan Offline' ? 'active' : '' }}"><a class="nav-link"
@@ -154,6 +177,8 @@
     <script src="{{ asset('assets/js/custom.js') }}"></script>
     {{-- Notif --}}
     <script src="{{ asset('assets/js/notif.js') }}"></script>
+    <!-- Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         function imgPreview() {
             const imagePreview = document.querySelector('.img-preview');

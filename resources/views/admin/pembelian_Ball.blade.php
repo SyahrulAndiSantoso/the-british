@@ -12,7 +12,10 @@
     <div class="flash-data" data-title="Gagal" data-aksi="Menambahkan" data-halaman="Pembelian Ball"></div>
     @enderror
 
-    @error('total_pakaian')
+    @error('layak_pakai')
+    <div class="flash-data" data-title="Gagal" data-aksi="Menambahkan" data-halaman="Pembelian Ball"></div>
+    @enderror
+    @error('tidak_layak_pakai')
     <div class="flash-data" data-title="Gagal" data-aksi="Menambahkan" data-halaman="Pembelian Ball"></div>
     @enderror
 
@@ -49,14 +52,28 @@
                             @enderror
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Total Isi Ball</label>
-                            <input type="text" class="form-control @error('total_pakaian') is-invalid @enderror" id="total_pakaian" name="total_pakaian">
-                            @error('total_pakaian')
+                            <label class="form-label">Supplier</label>
+                            <input type="text" class="form-control" id="supplier" name="supplier">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Jumlah Pakaian Layak Pakai</label>
+                            <input type="text" class="form-control @error('layak_pakai') is-invalid @enderror" id="layak_pakai" name="layak_pakai">
+                            @error('layak_pakai')
                             <div class="text-danger">
                                 {{ $message }}
                             </div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Jumlah Pakaian Tidak Layak Pakai</label>
+                            <input type="text" class="form-control @error('tidak_layak_pakai') is-invalid @enderror" id="tidak_layak_pakai" name="tidak_layak_pakai">
+                            @error('tidak_layak_pakai')
+                            <div class="text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        
                         <button type="submit" class="btn btn-maroon">Submit</button>
                     </form>
                 </div>
@@ -88,6 +105,9 @@
                                                 <th>No</th>
                                                 <th>Nama Ball</th>
                                                 <th>Tanggal Pembelian</th>
+                                                <th>Supplier</th>
+                                                <th>Jumlah Pakaian Layak Jual</th>
+                                                <th>Jumlah Pakaian Tidak Layak Jual</th>
                                                 <th>Total Isi Ball</th>
                                             </tr>
                                         </thead>
@@ -120,6 +140,15 @@
                 }, {
                     data: 'tgl_beli',
                     name: 'tgl_beli'
+                },{
+                    data: 'supplier',
+                    name: 'supplier'
+                },{
+                    data: 'layak_pakai',
+                    name: 'layak_pakai'
+                },{
+                    data: 'tidak_layak_pakai',
+                    name: 'tidak_layak_pakai'
                 }, {
                     data: 'total_pakaian',
                     name: 'total_pakaian'

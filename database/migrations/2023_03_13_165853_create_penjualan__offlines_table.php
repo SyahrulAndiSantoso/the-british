@@ -14,7 +14,7 @@ class CreatePenjualanOfflinesTable extends Migration
     public function up()
     {
         Schema::create('penjualan__offlines', function (Blueprint $table) {
-            $table->bigIncrements('id_penjualan_offline');
+            $table->string('id_penjualan_offline')->primary()->unique();
             $table->bigInteger('total')->nullable();
             $table->bigInteger('diterima')->nullable();
             $table->bigInteger('kembalian')->nullable();

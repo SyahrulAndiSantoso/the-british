@@ -2,11 +2,11 @@
 @section('konten')
     <br><br>
     @if (session()->has('title'))
-        <div class="flash-data" data-aksi='Dimasukkan' data-halaman='keranjang' data-title='{{ session('title') }}'>
+        <div class="flash-data" data-aksi='Dimasukkan' data-halaman='keranjang' data-title="{{ session('title') }}">
         </div>
     @elseif(session()->has('gagal'))
         <div class="flash-data" data-aksi='Produk Sudah Di Keranjang' data-halaman='keranjang'
-            data-title='{{ session('gagal') }}'>
+            data-title="{{ session('gagal') }}">
         </div>
     @endif
     <div class="col-12">
@@ -36,7 +36,7 @@
                 <div class="col-lg-4 pt-3 pt-lg-5 detail-produk">
                     <h5 class="col-12 mb-2 mb-lg-4" style="font-size:2em;"><b>{{ $produk->nama_produk }}</b></h5>
                     <div class="col-12 mb-lg-2 d-flex justify-content-between">
-                        <p>{{ $produk->merk }}</p>
+                        <p>{{ $produk->nama_merk }}</p>
                         <p>{{ $produk->nama_kategori_produk }}</p>
                     </div>
 
@@ -60,7 +60,7 @@
 
                     <p class="mb-lg-2">Ukuran</p>
                     <p class="mb-lg-4"><span class="pt-2 pb-2 ps-3 pe-3"
-                            style="background-color: #EAEFF2; border-radius:10px;">L</span></p>
+                            style="background-color: #EAEFF2; border-radius:10px;">{{ $produk->ukuran }}</span></p>
                     <div class="col-12 col-lg-12">
                         <form action="{{ route('tambahKeranjang', encrypt($produk->id_produk)) }}" method="POST">
                             @csrf

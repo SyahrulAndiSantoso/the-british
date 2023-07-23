@@ -21,11 +21,12 @@ class home_Controller extends Controller
             ->where('status', 1)
             ->latest()
             ->get();
-        $detailPromo = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk', 'promos.id_promo', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.deskripsi', 'detail__promos.promo_id')
+        $detailPromo = Produk::select('produks.id_produk', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'merks.nama_merk', 'promos.id_promo', 'promos.nama_promo', 'promos.diskon', 'promos.tipe', 'promos.deskripsi', 'detail__promos.promo_id')
+            ->leftjoin('merks', 'merks.id_merk', '=', 'produks.merk_id')
             ->leftjoin('detail__promos', 'produks.id_produk', '=', 'detail__promos.produk_id')
             ->leftjoin('promos', 'detail__promos.promo_id', '=', 'promos.id_promo')
             ->where([
-                'produks.stok' => 'ada',
+                'produks.stok' => 1,
                 'promos.status' => 1,
             ])
             ->latest('promos.id_promo')

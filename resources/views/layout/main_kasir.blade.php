@@ -5,10 +5,13 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
     <title>{{ $judul }}</title>
+
     {{-- Datatable --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
+    
     {{-- Fontawesome Libraries --}}
     <link href="{{ asset('assets/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     {{-- Icon Bootstrap 4 --}}
@@ -28,14 +31,16 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style2.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/components.css') }}">
     {{-- shortcut icon --}}
-    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/circle-logo.png') }}">
+    <!-- <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/circle-logo.png') }}"> -->
     {{-- Notif Toast Css --}}
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
     {{-- chart js --}}
     <script src="{{ asset('assets/js/chart/Chart.min.js') }}"></script>
+   
     {{-- Trix --}}
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
+
     <style>
         .coret {
             text-decoration: line-through;
@@ -106,7 +111,6 @@
         </div>
     </div>
 
-
     <!-- General JS Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
@@ -116,11 +120,15 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    
     <script src="{{ asset('assets/js/stisla.js') }}"></script>
 
+    
     <!-- Template JS File -->
     <script src="{{ asset('assets/js/scripts.js') }}"></script>
     <script src="{{ asset('assets/js/custom.js') }}"></script>
+    <script src="{{ asset('assets/js/quagga.min.js') }}"></script>
+   
     {{-- Notif --}}
     <script src="{{ asset('assets/js/notif.js') }}"></script>
 

@@ -5,7 +5,7 @@
         @if ($produk && $produk->count() != 0)
             <div class="row justify-content-center">
                 @foreach ($produk as $dataProduk)
-                    @if ($dataProduk->stok == 'ada')
+               
                         <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-4">
                             <a class="text-decoration-none"
                                 href="{{ route('detail-produk', encrypt($dataProduk->id_produk)) }}">
@@ -42,8 +42,7 @@
                                 </div>
                             </a>
                         </div>
-                    @else
-                    @endif
+                 
                 @endforeach
             </div>
         @else

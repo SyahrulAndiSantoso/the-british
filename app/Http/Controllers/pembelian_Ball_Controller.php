@@ -27,10 +27,21 @@ class pembelian_Ball_Controller extends Controller
     public function data_Pembelian_Ball()
     {
         return DataTables::of(
-            Pembelian_Ball::select('id_pembelian_ball', 'nama_ball', 'tgl_beli', 'total_pakaian')
-                ->latest()
+            Pembelian_Ball::select('id_pembelian_ball', 'nama_ball', 'tgl_beli','layak_pakai', 'tidak_layak_pakai', 'total_pakaian', 'supplier')
+            ->latest()
                 ->get(),
         )
+        ->editColumn('tgl_beli', function($pembelianBall){
+            $tgl = $pembelianBall->tgl_beli;
+            return $tgl->format('d M Y');
+        })
+        ->editColumn('supplier', function($pembelianBall){
+            if($pembelianBall->supplier){
+                return $pembelianBall->supplier;
+            }else{
+                return 'tidak ada';
+            }
+        })
             ->addIndexColumn()
             ->make(true);
     }
@@ -40,8 +51,13 @@ class pembelian_Ball_Controller extends Controller
         $validatedData = $request->validate([
             'nama_ball' => 'required',
             'tgl_beli' => 'required',
-            'total_pakaian' => 'required',
+            'layak_pakai' => 'required',
+            'tidak_layak_pakai' => 'required',
         ]);
+        $validatedData['total_pakaian'] = $request->layak_pakai+$request->tidak_layak_pakai;
+        if($request->supplier){
+            $validatedData['supplier']=$request->supplier;
+        }
 
         Pembelian_Ball::create($validatedData);
         return redirect()

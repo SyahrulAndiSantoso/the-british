@@ -17,9 +17,12 @@
                                         data-order="[[ 0, &quot;asc&quot; ]]">
                                         <thead>
                                             <tr>
-                                                <th>No</th>
+                                            <th>No</th>
                                                 <th>Nama Ball</th>
                                                 <th>Tanggal Pembelian</th>
+                                                <th>Supplier</th>
+                                                <th>Jumlah Pakaian Layak Jual</th>
+                                                <th>Jumlah Pakaian Tidak Layak Jual</th>
                                                 <th>Total Isi Ball</th>
                                             </tr>
                                         </thead>
@@ -52,6 +55,15 @@
                 }, {
                     data: 'tgl_beli',
                     name: 'tgl_beli'
+                },{
+                    data: 'supplier',
+                    name: 'supplier'
+                },{
+                    data: 'layak_pakai',
+                    name: 'layak_pakai'
+                },{
+                    data: 'tidak_layak_pakai',
+                    name: 'tidak_layak_pakai'
                 }, {
                     data: 'total_pakaian',
                     name: 'total_pakaian'

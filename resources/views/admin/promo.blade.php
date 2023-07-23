@@ -74,8 +74,12 @@
 
                         <div class="mb-3">
                             <label class="form-label">Diskon</label>
-                            <input type="number" class="form-control @error('diskon') is-invalid @enderror"
-                                value="{{ old('diskon') }}" id="diskon" name="diskon">
+                            <div class="input-group mb-3">
+                            <input type="number" class="form-control @error('diskon') is-invalid @enderror"  value="{{ old('diskon') }}" id="diskon" name="diskon">
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="basic-addon2">%</span>
+                            </div>
+                            </div>
                             @error('diskon')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror

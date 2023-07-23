@@ -1,5 +1,13 @@
 @extends('layout.main_admin')
 @section('konten')
+@if (session()->has('aksi'))
+        <script>
+            iziToast.success({
+            title: 'Berhasil',
+            message: 'Membatalkan Detail Penjualan Offline',
+            position: 'topRight'});
+        </script>
+@endif
     <section class="section">
         <div class="section-body">
             <div class="invoice">
@@ -28,8 +36,10 @@
                                                 <th>Merk</th>
                                                 <th>Ukuran</th>
                                                 <th>Harga</th>
+                                                <th>Qty</th>
                                                 <th>Diskon</th>
                                                 <th>Status</th>
+                                                <th>aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -78,8 +88,8 @@
                     data: 'gambar',
                     name: 'gambar'
                 }, {
-                    data: 'merk',
-                    name: 'merk'
+                    data: 'nama_merk',
+                    name: 'nama_merk'
                 }, {
                     data: 'ukuran',
                     name: 'ukuran'
@@ -87,11 +97,17 @@
                     data: 'harga',
                     name: 'harga'
                 }, {
+                    data: 'qty',
+                    name: 'qty'
+                }, {
                     data: 'diskon',
                     name: 'diskon'
                 }, {
                     data: 'status',
                     name: 'status'
+                }, {
+                    data: 'aksi',
+                    name: 'aksi'
                 }]
             });
         });

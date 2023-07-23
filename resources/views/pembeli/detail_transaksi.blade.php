@@ -25,7 +25,15 @@
                                                 <p class="text-success" style="font-size: 3em;"><b><i
                                                             class="bi bi-x-circle"></i></b></p>
                                                 <p style="font-size: 1.2em;"><b>Transaksi Dibatalkan</b></p>
-                                                <p class="text-secondary fw-lighter">Maaf, Silahkan Hubungi Kami</p>
+                                                <p class="text-secondary fw-lighter">Kami Akan Menghubungi Anda</p>
+                                            @elseif($penjualanOnline->status == 6)
+                                                    <p class="text-success" style="font-size: 3em;"><b><i class="bi bi-cash-stack"></i></b></p>
+                                                    <p style="font-size: 1.2em;"><b>Pembayaran Dikonfirmasi</b></p>
+                                                    <p class="text-secondary fw-lighter">Paket Akan Kami Kemas</p>
+                                            @elseif($penjualanOnline->status == 7)
+                                            <p class="text-danger" style="font-size: 3em;"><b><i class="bi bi-cash-stack"></i></b></p>
+                                                    <p style="font-size: 1.2em;"><b>Paket Sedang Dikirim</b></p>
+                                                    <p class="text-secondary fw-lighter">Mohon Ditunggu Paket Anda</p>
                                             @endif
 
                                         </center>
@@ -35,7 +43,7 @@
                         </li>
                         <li class="list-group-item">
                             <p><b>Tanggal Transaksi</b></p>
-                            <p class="text-secondary fw-light">{{ $penjualanOnline->tgl }}</p>
+                            <p class="text-secondary fw-light">{{ $penjualanOnline->tgl->format('d M Y'); }}</p>
                         </li>
                         <li class="list-group-item">
                             <p><b> Metode Pembayaran</b></p>
@@ -79,11 +87,15 @@
                                         </div>
 
                                         <div class="col-12 mb-lg-3 mb-sm-2 d-flex justify-content-between">
-                                            <span class="mb-2">{{ $row->merk }}</span>
-                                            @if ($row->status == 5)
-                                                <span class="mb-2 text-danger">produk ini dibatalkan</span>
-                                            @endif
+                                            <span class="mb-2">{{ $row->nama_merk }}</span>
+                                            <span class="mb-2">Qty 1</span>
+                                         
                                         </div>
+                                        @if ($row->status == 5)
+                                            <h5 class="mb-2 mb-lg-3 mb-sm-2">
+                                            produk ini dibatalkan
+                                            </h5>
+                                            @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -101,7 +113,7 @@
                                 <p>Diskon</p>
 
                                 <p class="fw-light text-primary">
-                                    @if ($diskon)
+                                    @if ($diskon->count()!=0)
                                         @foreach ($diskon as $row)
                                             @if ($diskon->count() == $loop->iteration)
                                                 {{ $row->diskon }} %
@@ -110,7 +122,7 @@
                                             @endif
                                         @endforeach
                                     @else
-                                        0
+                                        Tidak Ada
                                     @endif
                                 </p>
                             </div>
@@ -130,8 +142,7 @@
                             </div>
                             <div class="col-12 mb-3">
                                 <form action="{{ route('beranda') }}" method="GET">
-                                    <button style="width: 100%;" class="p-2 btn text-white btn-all btn-oval">Metode
-                                        Pembayaran</button>
+                                    <button style="width: 100%;" class="p-2 btn text-white btn-all btn-oval">Beranda</button>
                                 </form>
 
                             </div>

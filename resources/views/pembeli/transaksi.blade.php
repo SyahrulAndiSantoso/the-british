@@ -102,7 +102,7 @@
                     <div class="d-flex justify-content-between mb-2">
                         <span>Diskon</span>
                         <span class="text-primary">
-                            @if ($diskon)
+                            @if ($diskon->count()!=0)
                                 @foreach ($diskon as $row)
                                     @if ($diskon->count() == $loop->iteration)
                                         {{ $row->diskon }} %
@@ -111,7 +111,7 @@
                                     @endif
                                 @endforeach
                             @else
-                                0
+                                Tidak Ada
                             @endif
                         </span>
                     </div>
@@ -120,7 +120,7 @@
                         <span>Ongkir</span>
                         <span class="teks-merah">
                             <b>
-                                @if (isset($ongkir))
+                                @if ($ongkir)
                                     Rp {{ number_format($ongkir->total_ongkir, 0, ',', '.') }}
                                 @else
                                     {{ number_format(0, 0, ',', '.') }}
@@ -156,7 +156,7 @@
                                 <b>{{ $dataDetailPenjualanOnline->nama_produk }}</b>
                             </h5>
                             <div class="col-12 d-flex mb-lg-4 mb-sm-2 justify-content-between">
-                                <span class="mb-2">{{ $dataDetailPenjualanOnline->merk }}</span>
+                                <span class="mb-2">{{ $dataDetailPenjualanOnline->nama_merk }}</span>
                                 <span class="mb-2">Ukuran {{ $dataDetailPenjualanOnline->ukuran }}</span>
                             </div>
                             <div class="col-12 d-flex mb-lg-4 mb-sm-2 justify-content-between">
@@ -176,6 +176,9 @@
                                 @endif
 
                             </div>
+                            <div class="col-12 mb-lg-4 mb-sm-2 d-flex justify-content-between">
+                                    <span class="mb-2">Qty 1</span>
+                                </div>
                         </div>
                     </div>
                 @endforeach
@@ -200,11 +203,13 @@
                     onPending: function(result) {
                         /* You may add your own implementation here */
                         // window.location.href = '/invoice'
+                        window.location.href = '/'
                     },
                     onError: function(result) {
                         /* You may add your own implementation here */
                         // alert("payment failed!");
                         // console.log(result);
+                        window.location.href = '/profile'
                     },
                     onClose: function() {
                         /* You may add your own implementation here */

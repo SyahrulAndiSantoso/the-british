@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Penjualan_Offline extends Model
 {
     use HasFactory;
+    public $incrementing = false;
     protected $table = 'penjualan__offlines';
+    protected $dates = ['tgl'];
     protected $primaryKey = 'id_penjualan_offline';
-    protected $fillable = ['total', 'status', 'tgl','diterima','kembalian'];
+    protected $keyType = 'string';
+    protected $fillable = ['id_penjualan_offline','total', 'status', 'tgl','diterima','kembalian'];
 
     public function detail_penjualan_offline()
     {

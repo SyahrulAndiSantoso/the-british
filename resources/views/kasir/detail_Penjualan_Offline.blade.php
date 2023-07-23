@@ -30,7 +30,6 @@
                                                 <th>Harga</th>
                                                 <th>Diskon</th>
                                                 <th>status</th>
-                                                <th>aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -79,8 +78,8 @@
                     data: 'gambar',
                     name: 'gambar'
                 }, {
-                    data: 'merk',
-                    name: 'merk'
+                    data: 'nama_merk',
+                    name: 'nama_merk'
                 }, {
                     data: 'ukuran',
                     name: 'ukuran'
@@ -93,9 +92,6 @@
                 }, {
                     data: 'status',
                     name: 'status'
-                }, {
-                    data: 'aksi',
-                    name: 'aksi'
                 }]
             });
         });

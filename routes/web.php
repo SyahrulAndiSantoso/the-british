@@ -3,10 +3,13 @@
 use App\Http\Controllers\dashboard_Controller;
 use App\Http\Controllers\home_Controller;
 use App\Http\Controllers\kategori_Produk_Controller;
+use App\Http\Controllers\merk_Controller;
+use App\Http\Controllers\ukuran_Controller;
 use App\Http\Controllers\keranjang_Controller;
 use App\Http\Controllers\laporan_Penjualan_Offline_Controller;
 use App\Http\Controllers\laporan_Penjualan_Online_Controller;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\pengembalian_Dana_Controller;
 use App\Http\Controllers\pembelian_Ball_Controller;
 use App\Http\Controllers\penjualan_Offline_Controller;
 use App\Http\Controllers\penjualan_Online_Controller;
@@ -35,6 +38,30 @@ Route::post('/admin/login-admin', [LoginController::class, 'authenticate_admin']
 Route::post('/admin/logout', [LoginController::class, 'logout'])->name('logoutAdmin');
 
 Route::middleware(['admin'])->group(function () {
+    Route::get('/admin/ukuran', [ukuran_Controller::class,'index'])->name('viewUkuran');
+
+    Route::get('/dataUkuran', [ukuran_Controller::class, 'data_ukuran'])->name('dataUkuran');
+
+    Route::post('/admin/ukuran/store', [ukuran_Controller::class, 'proses_Store'])->name('tambahUkuran');
+
+    Route::get('/admin/ukuran/hapus/{ukuran}', [ukuran_Controller::class, 'hapus'])->name('hapusUkuran');
+
+    Route::get('/admin/ukuran/edit/{ukuran}', [ukuran_Controller::class, 'view_Edit'])->name('viewEditUkuran');
+
+    Route::post('/admin/ukuran/edit', [ukuran_Controller::class, 'proses_Edit'])->name('editUkuran');
+
+    Route::get('/admin/merk', [merk_Controller::class,'index'])->name('viewMerk');
+
+    Route::get('/dataMerk', [merk_Controller::class, 'data_merk'])->name('dataMerk');
+
+    Route::post('/admin/merk/store', [merk_Controller::class, 'proses_Store'])->name('tambahMerk');
+
+    Route::get('/admin/merk/hapus/{merk}', [merk_Controller::class, 'hapus'])->name('hapusMerk');
+
+    Route::get('/admin/merk/edit/{ukuran}', [merk_Controller::class, 'view_Edit'])->name('viewEditMerk');
+
+    Route::post('/admin/merk/edit', [merk_Controller::class, 'proses_Edit'])->name('editMerk');
+
     Route::get('/admin/produk', [produk_Controller::class, 'index'])->name('viewProduk');
 
     Route::get('/dataProduk', [produk_Controller::class, 'data_produk'])->name('dataProduk');
@@ -46,6 +73,7 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin/produk/store', [produk_Controller::class, 'proses_Store'])->name('tambahProduk');
 
     Route::get('/admin/produk/hapus/{produk}', [produk_Controller::class, 'hapus'])->name('hapusProduk');
+
 
     Route::get('/admin/detail-produk/{produk}', [produk_Controller::class, 'view_Detail_Produk'])->name('viewDetailProduk');
 
@@ -99,6 +127,8 @@ Route::middleware(['admin'])->group(function () {
 
     Route::get('/admin/penjualan-online', [penjualan_Online_Controller::class, 'index'])->name('viewPenjualanOnline');
 
+    Route::get('/admin/penjualan-online/paket-dikirim/{penjualan_online}', [penjualan_Online_Controller::class, 'paket_Dikirim'])->name('paketDikirim');
+
     Route::get('/dataPenjualanOnline', [penjualan_Online_Controller::class, 'data_Penjualan_Online'])->name('dataPenjualanOnline');
 
     Route::get('/admin/detail-penjualan-online/{penjualan_online}', [penjualan_Online_Controller::class, 'view_Detail_Penjualan_Online'])->name('viewDetailPenjualanOnline');
@@ -117,11 +147,21 @@ Route::middleware(['admin'])->group(function () {
 
     Route::get('/dataPenjualanOfflineAdmin', [penjualan_Offline_Controller::class, 'data_Penjualan_Offline'])->name('dataPenjualanOfflineAdmin');
 
+    Route::get('/admin/membatalkan/penjualan-offline/{penjualan_offline}', [penjualan_Offline_Controller::class, 'proses_Membatalkan_Penjualan_Offline'])->name('membatalkanPenjualanOffline');
+
     Route::get('/admin/detail-penjualan-offline/{penjualan_offline}', [penjualan_Offline_Controller::class, 'view_Detail_Penjualan_Offline'])->name('viewDetailPenjualanOfflineAdmin');
+
+    Route::get('/admin/membatalkan/detail-penjualan-offline/{penjualan_offline}', [penjualan_Offline_Controller::class, 'proses_Membatalkan_Detail_Penjualan_Offline'])->name('membatalkanDetailPenjualanOffline');
 
     Route::get('/dataDetailPenjualanOfflineAdmin/{penjualan_offline}', [penjualan_Offline_Controller::class, 'data_Detail_Penjualan_Offline'])->name('dataDetailPenjualanOfflineAdmin');
 
     Route::get('/admin/dashboard', [dashboard_Controller::class, 'index'])->name('viewDashboardAdmin');
+
+    Route::get('/admin/pengembalian-dana', [pengembalian_Dana_Controller::class,'index'])->name('viewPengembalianDanaAdmin');
+    
+    Route::get('/admin/pengembalian-dana/tambah/{penjualan_online}', [pengembalian_Dana_Controller::class,'view_Tambah'])->name('viewTambahPengembalianDanaAdmin');
+    
+    Route::post('/admin/pengembalian-dana/store', [pengembalian_Dana_Controller::class, 'proses_Store'])->name('tambahPengembalianDanaAdmin');
 
     Route::get('/admin/laporan-penjualan-online', [laporan_Penjualan_Online_Controller::class, 'index'])->name('viewLaporanPenjualanOnlineAdmin');
 
@@ -142,34 +182,31 @@ Route::post('/owner/logout', [LoginController::class, 'logout'])->name('logoutOw
 Route::middleware(['owner'])->group(function () {
     Route::get('/owner/dashboard', [dashboard_Controller::class, 'index'])->name('viewDashboardOwner');
 
+    Route::get('/owner/pengembalian-dana', [pengembalian_Dana_Controller::class,'index'])->name('viewPengembalianDanaOwner');
+
     Route::get('/owner/pembelian-ball', [pembelian_Ball_Controller::class, 'index'])->name('viewPembelianBallOwner');
 
     Route::get('/dataPembelianBallOwner', [pembelian_Ball_Controller::class, 'data_Pembelian_Ball'])->name('dataPembelianBallOwner');
 
-    Route::get('/owner/penjualan-online', function () {
-        $judul = 'Penjualan Online';
-        return view('owner.penjualan_Online', compact('judul'));
-    });
+    // Route::get('/owner/penjualan-offline', [penjualan_Offline_Controller::class, 'index'])->name('viewPenjualanOfflineOwner');
 
-    Route::get('/owner/penjualan-offline', [penjualan_Offline_Controller::class, 'index'])->name('viewPenjualanOfflineOwner');
+    // Route::get('/dataPenjualanOfflineOwner', [penjualan_Offline_Controller::class, 'data_Penjualan_Offline'])->name('dataPenjualanOfflineOwner');
 
-    Route::get('/dataPenjualanOfflineOwner', [penjualan_Offline_Controller::class, 'data_Penjualan_Offline'])->name('dataPenjualanOfflineOwner');
+    // Route::get('/owner/detail-penjualan-offline/{penjualan_offline}', [penjualan_Offline_Controller::class, 'view_Detail_Penjualan_Offline'])->name('viewDetailPenjualanOfflineOwner');
 
-    Route::get('/owner/detail-penjualan-offline/{penjualan_offline}', [penjualan_Offline_Controller::class, 'view_Detail_Penjualan_Offline'])->name('viewDetailPenjualanOfflineOwner');
+    // Route::get('/dataDetailPenjualanOfflineOwner/{penjualan_offline}', [penjualan_Offline_Controller::class, 'data_Detail_Penjualan_Offline'])->name('dataDetailPenjualanOfflineOwner');
 
-    Route::get('/dataDetailPenjualanOfflineOwner/{penjualan_offline}', [penjualan_Offline_Controller::class, 'data_Detail_Penjualan_Offline'])->name('dataDetailPenjualanOfflineOwner');
+    // Route::get('/owner/penjualan-online', [penjualan_Online_Controller::class, 'index']);
 
-    Route::get('/owner/penjualan-online', [penjualan_Online_Controller::class, 'index']);
+    // Route::get('/dataPenjualanOnlineOwner', [penjualan_Online_Controller::class, 'data_Penjualan_Online'])->name('dataPenjualanOnlineOwner');
 
-    Route::get('/dataPenjualanOnlineOwner', [penjualan_Online_Controller::class, 'data_Penjualan_Online'])->name('dataPenjualanOnlineOwner');
+    // Route::get('/owner/detail-penjualan-online/{penjualan_online}', [penjualan_Online_Controller::class, 'view_Detail_Penjualan_Online'])->name('viewDetailPenjualanOnlineOwner');
 
-    Route::get('/owner/detail-penjualan-online/{penjualan_online}', [penjualan_Online_Controller::class, 'view_Detail_Penjualan_Online'])->name('viewDetailPenjualanOnlineOwner');
+    // Route::get('/dataDetailPenjualanOnlineOwner/{penjualan_online}', [penjualan_Online_Controller::class, 'data_Detail_Penjualan_Online'])->name('dataDetailPenjualanOnlineOwner');
 
-    Route::get('/dataDetailPenjualanOnlineOwner/{penjualan_online}', [penjualan_Online_Controller::class, 'data_Detail_Penjualan_Online'])->name('dataDetailPenjualanOnlineOwner');
+    // Route::get('/dataAlamatPengirimanOwner/{penjualan_online}', [penjualan_Online_Controller::class, 'data_Alamat_Pengiriman'])->name('dataAlamatPengirimanOwner');
 
-    Route::get('/dataAlamatPengirimanOwner/{penjualan_online}', [penjualan_Online_Controller::class, 'data_Alamat_Pengiriman'])->name('dataAlamatPengirimanOwner');
-
-    Route::get('/dataJasaPengirimanOwner/{penjualan_online}', [penjualan_Online_Controller::class, 'data_Jasa_Pengiriman'])->name('dataJasaPengirimanOwner');
+    // Route::get('/dataJasaPengirimanOwner/{penjualan_online}', [penjualan_Online_Controller::class, 'data_Jasa_Pengiriman'])->name('dataJasaPengirimanOwner');
 
     Route::get('/owner/laporan-penjualan-online', [laporan_Penjualan_Online_Controller::class, 'index'])->name('viewLaporanPenjualanOnlineOwner');
 
@@ -207,10 +244,6 @@ Route::middleware(['kasir'])->group(function () {
     Route::get('/kasir/detail-penjualan-offline/{penjualan_offline}', [penjualan_Offline_Controller::class, 'view_Detail_Penjualan_Offline'])->name('viewDetailPenjualanOffline');
 
     Route::get('/dataDetailPenjualanOfflineKasir/{penjualan_offline}', [penjualan_Offline_Controller::class, 'data_Detail_Penjualan_Offline'])->name('dataDetailPenjualanOfflineKasir');
-
-    Route::get('/kasir/membatalkan/detail-penjualan-offline/{penjualan_offline}', [penjualan_Offline_Controller::class, 'proses_Membatalkan_Detail_Penjualan_Offline'])->name('membatalkanDetailPenjualanOffline');
-
-    Route::get('/kasir/membatalkan/penjualan-offline/{penjualan_offline}', [penjualan_Offline_Controller::class, 'proses_Membatalkan_Penjualan_Offline'])->name('membatalkanPenjualanOffline');
 
     Route::get('/kasir/penjualan-offline/cetakKwitansi/{penjualan_offline}', [penjualan_Offline_Controller::class, 'cetak_Kwitansi'])->name('cetakKwitansi');
 });
@@ -252,6 +285,8 @@ Route::middleware(['pembeli'])->group(function () {
 
     Route::get('/semua-produk', [produk_Controller::class, 'view_Semua_Produk_Pembeli'])->name('viewSemuaProdukPembeli');
     
+    Route::get('/acc-paket/{penjualan_online}', [penjualan_Online_Controller::class, 'acc_Paket'])->name('accPaketPembeli');
+
     Route::get('/semua-produk/{kategori_produk:nama_kategori_produk}', [produk_Controller::class, 'view_Semua_Produk_Kategori'])->name('viewSemuaProduk');
     
     Route::get('/semua-produk-promo/{promo}', [produk_Controller::class, 'view_Semua_Produk_Promo_Pembeli'])->name('viewSemuaProdukPromoPembeli');

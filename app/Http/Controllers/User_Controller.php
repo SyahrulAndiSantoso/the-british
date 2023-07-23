@@ -32,8 +32,9 @@ class User_Controller extends Controller
             ->latest('penjualan__onlines.id_penjualan_online')
             ->get();
             
-            $detailPenjualanOnline = Detail_Penjualan_Online::select('penjualan__onlines.id_penjualan_online', 'detail__penjualan__onlines.diskon', 'detail__penjualan__onlines.status', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'produks.merk')
+            $detailPenjualanOnline = Detail_Penjualan_Online::select('penjualan__onlines.id_penjualan_online', 'detail__penjualan__onlines.diskon', 'detail__penjualan__onlines.status', 'produks.nama_produk', 'produks.thumbnail', 'produks.harga', 'merks.nama_merk')
             ->join('produks', 'detail__penjualan__onlines.produk_id', '=', 'produks.id_produk')
+            ->join('merks', 'produks.merk_id', '=', 'merks.id_merk')
             ->join('penjualan__onlines', 'detail__penjualan__onlines.penjualan_online_id', '=', 'penjualan__onlines.id_penjualan_online')
             ->where('penjualan__onlines.user_id', auth()->user()->id_user)
             ->where('penjualan__onlines.status', '!=', 2)
@@ -49,11 +50,13 @@ class User_Controller extends Controller
             ])
             ->where('penjualan__onlines.status', '!=', 2)
             ->where('detail__penjualan__onlines.diskon', '>', 0)
-            ->groupBy('detail__penjualan__onlines.diskon')
+            ->groupBy([
+                'detail__penjualan__onlines.diskon',
+                'penjualan__onlines.id_penjualan_online'
+            ])
             ->latest('penjualan__onlines.id_penjualan_online')
             ->get();
-
-        $judul = 'Invoice Transaksi';
+            
 
         return view('pembeli.profile', compact('judul', 'alamat', 'provinsi', 'kategori', 'penjualanOnline', 'detailPenjualanOnline', 'diskon'));
     }
@@ -118,14 +121,19 @@ class User_Controller extends Controller
 
     public function proses_hapus_alamat(Alamat $alamat)
     {
-        $data = Alamat::find($alamat->id_alamat);
-        $data->delete($alamat->id_alamat);
-        return redirect()
-            ->route('profile')
-            ->with([
-                'aksi' => 'Menghapus',
-                'halaman' => 'Alamat',
-            ]);
+        try{
+            $data = Alamat::find($alamat->id_alamat);
+            $data->delete($alamat->id_alamat);
+            return redirect()
+                ->route('profile')
+                ->with([
+                    'aksi' => 'Menghapus',
+                    'halaman' => 'Alamat',
+                ]);
+        }catch(\Exception $e){
+            return back()->with(['gagalhapus'=>'Gagal Menghapus']);
+        }
+       
     }
 
     public function view_edit_alamat(Alamat $alamat)
@@ -150,12 +158,12 @@ class User_Controller extends Controller
     {
         $data = Alamat::where('id_alamat', $request->id_alamat)->first();
         $validatedData = $request->validate([
-            'keterangan' => 'required',
+            'keterangan' => 'required|min:3',
             'provinsi' => 'required',
             'kabupaten' => 'required',
             'kecamatan' => 'required',
             'kelurahan' => 'required',
-            'alamat_detail' => 'required',
+            'alamat_detail' => 'required|min:4',
         ]);
         $dataProvinsi = Province::where('id', $request->provinsi)->first();
         $dataKabupaten = Regency::where('id', $request->kabupaten)->first();

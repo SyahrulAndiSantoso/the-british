@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style2.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/components.css') }}">
     {{-- shortcut icon --}}
-    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/circle-logo.png') }}">
+    <!-- <link rel="shortcut icon" type="image/png" href="{{ asset('assets/img/circle-logo.png') }}"> -->
     {{-- Notif Toast Css --}}
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
     {{-- chart js --}}
@@ -56,14 +56,14 @@
                                 <h3 class="text-maroon">Masuk Admin</h3>
                             </div>
                             <div class="card-body">
-                                <form method="POST" action="{{ route('authenticateAdmin') }}" class="needs-validation"
-                                    novalidate="">
+                                <form method="POST" action="{{ route('authenticateAdmin') }}" 
+                                    >
                                     @csrf
                                     <div class="form-group">
                                         <label for="username">Username</label>
                                         <input id="username" type="text"
                                             class="form-control @error('username') is-invalid @enderror" name="username"
-                                            tabindex="1" autofocus>
+                                            tabindex="1" autofocus required>
                                         @error('username')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -71,11 +71,11 @@
 
                                     <div class="form-group">
                                         <div class="d-block">
-                                            <label for="password" class="control-label">Kata Sandi</label>
+                                            <label for="password" class="control-label">Password</label>
                                         </div>
                                         <input id="password" type="password"
                                             class="form-control @error('password') is-invalid @enderror" name="password"
-                                            tabindex="2">
+                                            tabindex="2" required>
                                         @error('password')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror

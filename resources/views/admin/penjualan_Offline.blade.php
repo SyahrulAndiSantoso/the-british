@@ -1,5 +1,9 @@
 @extends('layout.main_admin')
 @section('konten')
+@if (session()->has('aksi'))
+        <div class="flash-data" data-title="Berhasil" data-aksi="{{ session('aksi') }}" data-halaman="Penjualan Offline">
+        </div>
+@endif
     <div class="row mb-2">
         <div class="col-6 col-md-6 col-lg-6">
             <h3 class="text-dark">Daftar Penjualan Offline</h3>
@@ -18,6 +22,7 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Kode Penjualan Offline</th>
                                                 <th>Tanggal</th>
                                                 <th>Total</th>
                                                 <th>Diterima</th>
@@ -49,6 +54,9 @@
                 columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex'
+                }, {
+                    data: 'id_penjualan_offline',
+                    name: 'id_penjualan_offline'
                 }, {
                     data: 'tgl',
                     name: 'tgl'

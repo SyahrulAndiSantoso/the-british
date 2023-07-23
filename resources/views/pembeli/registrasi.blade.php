@@ -27,13 +27,13 @@
             </div>
             <div class="col-lg-7 mb-5">
                 <div class="col-12  px-4 py-5 login">
-                    <p style="font-size: 1.2em;"><b>Masuk</b></p>
+                    <p style="font-size: 1.2em;"><b>Registrasi</b></p>
                     <form action="{{ route('registrasiPembeli') }}" method="POST">
                         @csrf
                         <div class="mb-4">
                             <label class="form-label">Nama</label>
                             <input name="nama_user" class="form-control @error('nama_user') is-invalid @enderror"
-                                value="{{ old('nama_user') }}">
+                                value="{{ old('nama_user') }}" autofocus required>
                             @error('nama_user')
                                 <div class="text-danger form-text">{{ $message }}</div>
                             @enderror
@@ -46,7 +46,7 @@
                                     id="basic-addon1">+62</span>
                                 <input type="number" name="nomor"
                                     class="form-control @error('nomor') is-invalid @enderror"
-                                    value="{{ old('nomor') }}">
+                                    value="{{ old('nomor') }}" required>
                             </div>
                             @error('nomor')
                                 <div class="text-danger form-text">{{ $message }}</div>
@@ -56,7 +56,7 @@
                             <label for="exampleInputEmail1" class="form-label">Tgl Lahir</label>
                             <input type="date" name="tgl_lahir"
                                 class="form-control @error('tgl_lahir') is-invalid @enderror" id="exampleInputEmail1"
-                                value="{{ old('tgl_lahir') }}" />
+                                value="{{ old('tgl_lahir') }}" required/>
                             @error('tgl_lahir')
                                 <div class="text-danger form-text">{{ $message }}</div>
                             @enderror
@@ -65,7 +65,7 @@
                             <label for="exampleInputEmail1" class="form-label">Email</label>
                             <input type="email" name="email"
                                 class="form-control @error('email') is-invalid @enderror" id="exampleInputEmail1"
-                                value="{{ old('email') }}" />
+                                value="{{ old('email') }}" required/>
                             @error('email')
                                 <div class="text-danger form-text">{{ $message }}</div>
                             @enderror
@@ -74,7 +74,7 @@
                             <label for="exampleInputEmail1" class="form-label">Username</label>
                             <input type="text" name="username"
                                 class="form-control @error('username') is-invalid @enderror" id="exampleInputEmail1"
-                                value="{{ old('username') }}" />
+                                value="{{ old('username') }}" required/>
                             @error('username')
                                 <div class="text-danger form-text">{{ $message }}</div>
                             @enderror
@@ -82,7 +82,7 @@
                         <div class="mb-4">
                             <label class="form-label">Password</label>
                             <input type="password" name="password"
-                                class="form-control @error('password') is-invalid @enderror" id="exampleInputPassword1">
+                                class="form-control @error('password') is-invalid @enderror" id="exampleInputPassword1" required>
                             @error('password')
                                 <div class="text-danger form-text">{{ $message }}</div>
                             @enderror

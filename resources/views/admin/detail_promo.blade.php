@@ -30,7 +30,7 @@
                                                     method="GET">
                                                     <div class="input-group mb-3">
                                                         <input type="text" name="search" value="{{ request('search') }}"
-                                                            class="form-control" aria-describedby="button-addon2">
+                                                            class="form-control" placeholder="kode produk" aria-describedby="button-addon2">
                                                         <div class="input-group-append">
                                                             <button class="btn btn-maroon" type="submit"
                                                                 id="button-addon2">Cari</button>
@@ -41,9 +41,10 @@
                                         </div>
                                     </div>
                                     <div class="row justify-content-center">
+                                        @isset($produk)
                                         @if ($produk->count() != 0)
                                             @foreach ($produk as $row)
-                                                @if ($row->stok == 'tidak ada')
+                                                @if ($row->stok == 0)
                                                     <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-4">
 
                                                         <div class="justify-content-center text-danger"><b>Stok Produk Habis
@@ -59,7 +60,7 @@
                                                                 <div class="card-body">
                                                                     <p class="card-title text-dark">{{ $row->nama_produk }}
                                                                     </p>
-                                                                    <p class="card-text text-dark">{{ $row->merk }}</p>
+                                                                    <p class="card-text text-dark">{{ $row->nama_merk }}</p>
                                                                     <h6 class="text-dark">
                                                                         Rp {{ number_format($row->harga, 0, ',', '.') }}
                                                                     </h6>
@@ -74,6 +75,7 @@
                                             </div>
                                         @else
                                         @endif
+                                        @endisset
                                     </div>
                                 </div>
                             </div>
@@ -90,6 +92,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>No</th>
+                                                    <th>Kode Produk</th>
                                                     <th>Nama Produk</th>
                                                     <th>merk</th>
                                                     <th>ukuran</th>
@@ -130,11 +133,14 @@
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex'
                 }, {
+                    data: 'id_produk',
+                    name: 'id_produk'
+                }, {
                     data: 'nama_produk',
                     name: 'nama_produk'
                 }, {
-                    data: 'merk',
-                    name: 'merk'
+                    data: 'nama_merk',
+                    name: 'nama_merk'
                 }, {
                     data: 'ukuran',
                     name: 'ukuran'
